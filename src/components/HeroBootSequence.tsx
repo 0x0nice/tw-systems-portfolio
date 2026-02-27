@@ -203,53 +203,35 @@ export default function HeroBootSequence() {
   // ── Static render (no Framer Motion) — Safari-safe, used when boot animation is off ──
   if (noMotion) {
     return (
-      <section className="relative mb-16 mt-4 sm:mb-24 sm:mt-8 md:mb-32 md:mt-16 overflow-hidden">
-        <svg
-          className="pointer-events-none absolute inset-0 h-full w-full"
-          viewBox="0 0 1200 600"
-          preserveAspectRatio="xMidYMid slice"
-          aria-hidden="true"
+      <section className="mb-16 mt-4 sm:mb-24 sm:mt-8 md:mb-32 md:mt-16">
+        <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]">
+          Systems Architecture / Portfolio
+        </p>
+        <h1
+          className="font-serif text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl"
+          style={{ color: "#EDEDED" }}
         >
-          {gridLines.map((line) => (
-            <line
-              key={line.id}
-              x1={line.x1}
-              y1={line.y1}
-              x2={line.x2}
-              y2={line.y2}
-              stroke="#333333"
-              strokeWidth={0.5}
-              opacity={0.15}
-            />
-          ))}
-        </svg>
-        <div className="relative z-10">
-          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]">
-            Systems Architecture / Portfolio
-          </p>
-          <h1 className="font-serif text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl">
-            Architecting <br />
-            Decision Systems.
-          </h1>
-          <p className="mt-8 max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base">
-            I build high-performance infrastructure for serious operators.
-            Merging behavioral psychology with rigorous technical execution to
-            create tools that think, filter, and verify.
-          </p>
-          <div className="mt-8 sm:mt-10 flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm uppercase tracking-widest">
-            <a
-              href="#systems"
-              className="text-[#EDEDED] transition-colors hover:text-[#005ECC]"
-            >
-              [ Inspect Systems ]
-            </a>
-            <a
-              href="/about"
-              className="text-[#878787] transition-colors hover:text-[#EDEDED]"
-            >
-              [ The Builder ]
-            </a>
-          </div>
+          Architecting <br />
+          Decision Systems.
+        </h1>
+        <p className="mt-8 max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base">
+          I build high-performance infrastructure for serious operators.
+          Merging behavioral psychology with rigorous technical execution to
+          create tools that think, filter, and verify.
+        </p>
+        <div className="mt-8 sm:mt-10 flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm uppercase tracking-widest">
+          <a
+            href="#systems"
+            className="text-[#EDEDED] transition-colors hover:text-[#005ECC]"
+          >
+            [ Inspect Systems ]
+          </a>
+          <a
+            href="/about"
+            className="text-[#878787] transition-colors hover:text-[#EDEDED]"
+          >
+            [ The Builder ]
+          </a>
         </div>
       </section>
     );
