@@ -1,36 +1,36 @@
-import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
-import { Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import type { Metadata } from "next";
+import { Instrument_Serif } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-});
-
 export const metadata: Metadata = {
-  title: "Thomas Williams — Systems Architect",
+  title: "Thomas Williams | Systems Architect",
   description:
-    "Trading, AI, and product design. Building systems at the intersection of markets and intelligence.",
+    "Architecting Decision Systems. Finance-native. AI-native. Systems-first.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistMono.variable} ${instrumentSerif.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${instrumentSerif.variable} ${geistMono.variable}`}
+    >
+      <body className="bg-offBlack text-softWhite font-mono antialiased selection:bg-cobalt selection:text-white">
         {children}
       </body>
     </html>

@@ -5,42 +5,37 @@
   --foreground: #EDEDED;
   --gray: #878787;
   --grid: #333333;
+  --cobalt: #005ECC;
+  --emerald: #0A7A55;
+  --glass: rgba(23, 23, 23, 0.4);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-gray: var(--gray);
-  --color-grid: var(--grid);
+  --color-offBlack: #0A0A0A;
+  --color-softWhite: #EDEDED;
+  --color-techGray: #878787;
+  --color-cadLine: #333333;
+  --color-cobalt: #005ECC;
+  --color-emerald: #0A7A55;
+  --color-glass: var(--glass);
   --font-sans: var(--font-geist-mono);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-instrument-serif);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: #0A0A0A;
+  color: #EDEDED;
   font-family: var(--font-geist-mono), monospace;
 }
 
-/* CAD grid background */
-.cad-grid {
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* Subtle grid — smaller, lighter */
-.cad-grid-fine {
-  background-image:
-    linear-gradient(rgba(51, 51, 51, 0.4) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(51, 51, 51, 0.4) 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
-/* Selection styling */
 ::selection {
-  background: rgba(135, 135, 135, 0.3);
-  color: #EDEDED;
+  background: var(--cobalt);
+  color: white;
 }
