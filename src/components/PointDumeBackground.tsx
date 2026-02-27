@@ -22,7 +22,7 @@ export default function PointDumeBackground() {
     <Canvas
       dpr={[1, 2]}
       gl={{ antialias: false, alpha: false }}
-      camera={{ position: [0, 3.5, 14], fov: 55, near: 0.1, far: 100 }}
+      camera={{ position: [0, 3.5, 14], fov: 55, near: 0.1, far: 150 }}
       style={{
         position: "fixed",
         top: 0,
@@ -33,7 +33,7 @@ export default function PointDumeBackground() {
       }}
       onCreated={({ gl, scene }) => {
         gl.setClearColor("#0A0A0A");
-        scene.fog = new THREE.FogExp2("#0A0A0A", 0.02);
+        scene.fog = new THREE.FogExp2("#0A0A0A", 0.015);
       }}
     >
       <CameraRig />
@@ -47,7 +47,7 @@ export default function PointDumeBackground() {
         <Bloom
           luminanceThreshold={0.2}
           luminanceSmoothing={0.9}
-          intensity={2.5}
+          intensity={1.8}
           mipmapBlur
         />
       </EffectComposer>

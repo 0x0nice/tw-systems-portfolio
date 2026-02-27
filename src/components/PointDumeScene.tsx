@@ -18,6 +18,7 @@ function smoothstep(edge0: number, edge1: number, x: number) {
 /* ================================================================== */
 /*  Shared GLSL — Elevation-mapped LiDAR wireframe                     */
 /*  Technical Gray: #333 → #5A5A5A → #878787                          */
+/*  Used by: Cliff, Ocean, Hills (NOT Beach)                           */
 /* ================================================================== */
 
 const terrainVert = /* glsl */ `
@@ -55,8 +56,49 @@ const terrainFrag = /* glsl */ `
 `;
 
 /* ================================================================== */
-/*  Zone 1 — POINT DUME CLIFF (bottom-left foreground)                 */
-/*  Steep, rugged headland. Partially off-screen for dramatic framing. */
+/*  Beach GLSL — Solid dark matte surface with subtle static grain     */
+/*  NO wireframe. Alpha fades at the left edge (toward ocean) to       */
+/*  create a natural shoreline transition.                             */
+/* ================================================================== */
+
+const beachVert = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const beachFrag = /* glsl */ `
+  varying vec2 vUv;
+
+  // Hash-based pseudo-random for static grain texture
+  float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+  }
+
+  void main() {
+    vec3 baseColor = vec3(0.05);  // dark sand, barely above void
+
+    // Fine static sand grain
+    float grain = hash(floor(vUv * 600.0)) * 0.018;
+
+    vec3 color = baseColor + grain;
+
+    // Shoreline fade: solid on right (beach), transparent on left (ocean)
+    // UV.x = 0 is left edge (ocean side), UV.x = 1 is right edge (deep sand)
+    float shoreAlpha = smoothstep(0.05, 0.4, vUv.x);
+
+    // Also fade at back edge so it doesn't have a hard horizon line
+    float horizonFade = smoothstep(0.0, 0.15, vUv.y) * smoothstep(0.0, 0.1, 1.0 - vUv.y);
+
+    gl_FragColor = vec4(color, shoreAlpha * horizonFade * 0.75);
+  }
+`;
+
+/* ================================================================== */
+/*  Zone 1 — POINT DUME CLIFF (bottom-left foreground anchor)          */
+/*  Steep, jagged headland. Close to camera, partially off-screen.     */
 /* ================================================================== */
 
 export function Cliff() {
@@ -101,7 +143,7 @@ export function Cliff() {
     () => ({
       uMinElev: { value: 0 },
       uMaxElev: { value: 6.0 },
-      uBaseOpacity: { value: 0.15 },
+      uBaseOpacity: { value: 0.18 },
     }),
     []
   );
@@ -110,7 +152,7 @@ export function Cliff() {
     <mesh
       geometry={geometry}
       rotation={[-Math.PI / 2, 0, 0.15]}
-      position={[-14, -5, 2]}
+      position={[-12, -5, 3]}
     >
       <shaderMaterial
         vertexShader={terrainVert}
@@ -125,13 +167,14 @@ export function Cliff() {
 }
 
 /* ================================================================== */
-/*  Zone 2 — ZUMA BEACH (right side, static flat sand)                 */
-/*  Z-rotation angles left edge to form shoreline with ocean below.    */
+/*  Zone 2 — ZUMA BEACH (right side, SOLID — no wireframe)             */
+/*  Dark matte surface with subtle grain. Alpha gradient on left edge  */
+/*  fades into the ocean wireframe, creating the visible shoreline.    */
 /* ================================================================== */
 
 export function Beach() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(28, 40, 20, 28);
+    const geo = new THREE.PlaneGeometry(28, 40, 16, 24);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
@@ -144,7 +187,7 @@ export function Beach() {
 
       // Beach slopes down toward ocean on left edge (-x side)
       const nx = (x + 14) / 28;
-      const slope = Math.max(0, (1 - nx) * 0.08);
+      const slope = Math.max(0, (1 - nx) * 0.15);
 
       pos.setZ(i, dune + ripple - slope);
     }
@@ -153,37 +196,29 @@ export function Beach() {
     return geo;
   }, []);
 
-  const uniforms = useMemo(
-    () => ({
-      uMinElev: { value: -0.10 },
-      uMaxElev: { value: 0.12 },
-      uBaseOpacity: { value: 0.015 },
-    }),
-    []
-  );
-
   return (
     <mesh
       geometry={geometry}
       rotation={[-Math.PI / 2, 0, -0.12]}
       position={[10, -4.4, -12]}
+      renderOrder={1}
     >
       <shaderMaterial
-        vertexShader={terrainVert}
-        fragmentShader={terrainFrag}
-        uniforms={uniforms}
-        wireframe
+        vertexShader={beachVert}
+        fragmentShader={beachFrag}
         transparent
         depthWrite={false}
+        side={THREE.DoubleSide}
       />
     </mesh>
   );
 }
 
 /* ================================================================== */
-/*  Zone 3 — THE OCEAN (center-left, 0.2u below beach)                */
-/*  Only animated mesh. Opposing Z-rotation creates diagonal shoreline */
-/*  where ocean and beach planes intersect.                            */
+/*  Zone 3 — THE OCEAN (center-left, animated wireframe)               */
+/*  The only animated mesh. Wireframe contrasts against solid beach.    */
+/*  Opposing Z-rotation (+0.12 vs beach -0.12) creates the diagonal    */
+/*  overlap that merges into the shoreline.                            */
 /* ================================================================== */
 
 export function Ocean() {
@@ -197,7 +232,7 @@ export function Ocean() {
       uWaveSpeed: { value: 0.2 },
       uMinElev: { value: -0.10 },
       uMaxElev: { value: 0.10 },
-      uBaseOpacity: { value: 0.06 },
+      uBaseOpacity: { value: 0.12 },
     }),
     []
   );
@@ -228,19 +263,19 @@ export function Ocean() {
 
 /* ================================================================== */
 /*  Zone 4 — SANTA MONICA MOUNTAINS (far right horizon)                */
-/*  Rolling silhouette, right-biased. Fog-attenuated at z=-35.         */
+/*  Rolling silhouette above the beach. Fog-attenuated but visible.    */
 /* ================================================================== */
 
 export function Hills() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(60, 16, 44, 14);
+    const geo = new THREE.PlaneGeometry(80, 20, 52, 16);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
 
-      const nx = (x + 30) / 60;
+      const nx = (x + 40) / 80;
 
       // Low-frequency rolling terrain (3-octave FBM)
       const h1 = fbm(x * 0.03 + 7.0, y * 0.045 + 4.0, 3, 2.0, 0.5);
@@ -261,7 +296,7 @@ export function Hills() {
     () => ({
       uMinElev: { value: 0 },
       uMaxElev: { value: 2.0 },
-      uBaseOpacity: { value: 0.04 },
+      uBaseOpacity: { value: 0.12 },
     }),
     []
   );
@@ -270,7 +305,7 @@ export function Hills() {
     <mesh
       geometry={geometry}
       rotation={[-Math.PI / 2, 0, 0.05]}
-      position={[8, -3.5, -35]}
+      position={[15, 4, -50]}
     >
       <shaderMaterial
         vertexShader={terrainVert}
@@ -285,20 +320,20 @@ export function Hills() {
 }
 
 /* ================================================================== */
-/*  THE SUN — copper sphere on the left horizon                        */
-/*  Half-submerged on ocean plane. Bloom creates ambient warm glow.     */
+/*  THE SUN — copper sphere, upper-left of viewport                    */
+/*  Above the header. Bloom creates ambient warm glow.                 */
 /* ================================================================== */
 
 export function Sun() {
   const sunColor = useMemo(
-    () => new THREE.Color("#D97736").multiplyScalar(5.0),
+    () => new THREE.Color("#D97736").multiplyScalar(6.0),
     []
   );
 
   return (
-    <mesh position={[-22, -4.0, -22]} renderOrder={-1}>
-      <sphereGeometry args={[1.2, 32, 32]} />
-      <meshBasicMaterial color={sunColor} toneMapped={false} />
+    <mesh position={[-32, 25, -40]} renderOrder={-1}>
+      <sphereGeometry args={[2.0, 32, 32]} />
+      <meshBasicMaterial color={sunColor} toneMapped={false} fog={false} />
     </mesh>
   );
 }
