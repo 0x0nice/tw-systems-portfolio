@@ -219,22 +219,18 @@ export default function HeroBootSequence() {
           Merging behavioral psychology with rigorous technical execution to
           create tools that think, filter, and verify.
         </p>
-        <div className="mt-8 sm:mt-10 flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm uppercase tracking-widest">
-          <a
-            href="#systems"
-            className="transition-colors hover:text-[#005ECC]"
-            style={{ color: "#EDEDED" }}
-          >
+        <p
+          className="mt-8 sm:mt-10 text-xs sm:text-sm uppercase tracking-widest"
+          style={{ color: "#878787" }}
+        >
+          <a href="#systems" style={{ color: "#EDEDED" }}>
             [ Inspect Systems ]
           </a>
-          <a
-            href="/about"
-            className="transition-colors hover:text-[#EDEDED]"
-            style={{ color: "#878787" }}
-          >
+          &nbsp;&nbsp;&nbsp;
+          <a href="/about" style={{ color: "#878787" }}>
             [ The Builder ]
           </a>
-        </div>
+        </p>
       </section>
     );
   }
