@@ -73,6 +73,7 @@ export const PROJECTS: Project[] = [
       { category: "Design", items: ["Premium Dark Glass", "Glassmorphism", "Muted Palette"] },
     ],
     links: [
+      { label: "Live App", url: "https://tos-trade-journal.pages.dev" },
       { label: "GitHub", url: "https://github.com/0x0nice/tos-trade-journal" },
     ],
   },
@@ -186,6 +187,7 @@ export const PROJECTS: Project[] = [
       { category: "Deploy", items: ["Netlify", "PWA", "Single-File Architecture"] },
     ],
     links: [
+      { label: "Live App", url: "https://projectzero-8kq.pages.dev" },
       { label: "GitHub", url: "https://github.com/0x0nice/projectZero" },
     ],
   },

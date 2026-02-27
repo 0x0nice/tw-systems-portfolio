@@ -76,6 +76,23 @@ export default function SystemCard({ project, index = 0 }: { project: Project; i
           <p className="mb-1 text-xs uppercase tracking-widest text-[#878787]">
             {project.tagline}
           </p>
+          {project.links.some((l) => /live|platform/i.test(l.label)) && (
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="relative flex h-1.5 w-1.5">
+                <span
+                  className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+                  style={{ backgroundColor: project.color }}
+                />
+                <span
+                  className="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: project.color }}
+                />
+              </span>
+              <span className="text-[9px] uppercase tracking-widest" style={{ color: project.color }}>
+                Live
+              </span>
+            </div>
+          )}
         </div>
 
         {/* SVG graphic — flows straight down from title */}

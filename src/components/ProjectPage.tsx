@@ -80,6 +80,30 @@ export default function ProjectPage({ project }: { project: Project }) {
           <p className="max-w-2xl text-sm leading-relaxed text-[#878787]">
             {project.thesis}
           </p>
+
+          {/* Primary CTAs */}
+          <div className="mt-8 flex flex-wrap gap-4">
+            {project.links.map((link) => {
+              const isLive = link.label.toLowerCase().includes("live") || link.label.toLowerCase().includes("platform");
+              return (
+                <a
+                  key={link.label}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-2 px-5 py-3 text-xs uppercase tracking-widest transition-colors ${
+                    isLive
+                      ? "border-2 text-[#EDEDED] hover:bg-white/5"
+                      : "border border-[#333333] text-[#878787] hover:border-[#878787] hover:text-[#EDEDED]"
+                  }`}
+                  style={isLive ? { borderColor: project.color, color: project.color } : undefined}
+                >
+                  {link.label}
+                  <ExternalLink size={12} />
+                </a>
+              );
+            })}
+          </div>
         </div>
 
         {/* SVG Schematic */}
