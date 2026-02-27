@@ -386,9 +386,11 @@ const glitchGroupVariants = {
 export default function ZeroWireframe({
   className = "",
   active,
+  disableHover = false,
 }: {
   className?: string;
   active?: boolean;
+  disableHover?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
@@ -424,9 +426,9 @@ export default function ZeroWireframe({
       className={className}
       initial="hidden"
       animate={currentVariant}
-      whileHover="hover"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      whileHover={disableHover ? undefined : "hover"}
+      onMouseEnter={() => !disableHover && setIsHovered(true)}
+      onMouseLeave={() => !disableHover && setIsHovered(false)}
       variants={{
         hidden: {
           filter: "drop-shadow(0 0 0px rgba(0,245,212,0))",

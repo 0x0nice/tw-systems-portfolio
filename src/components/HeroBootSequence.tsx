@@ -201,7 +201,7 @@ export default function HeroBootSequence() {
   });
 
   return (
-    <section className="relative mb-32 mt-8 overflow-hidden md:mt-16">
+    <section className="relative mb-16 mt-4 sm:mb-24 sm:mt-8 md:mb-32 md:mt-16 overflow-hidden">
       {/* ── SVG Background Grid ─────────────────────────────────────────── */}
       <svg
         className="pointer-events-none absolute inset-0 h-full w-full"
@@ -405,7 +405,7 @@ export default function HeroBootSequence() {
           initial={noMotion ? false : { opacity: 0 }}
           animate={{ opacity: showContent ? 1 : 0 }}
           transition={noMotion ? { duration: 0 } : { duration: 0.6, delay: showContent ? 0.6 : 0 }}
-          className="mt-10 flex gap-6 text-sm uppercase tracking-widest"
+          className="mt-8 sm:mt-10 flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm uppercase tracking-widest"
         >
           <a
             href="#systems"

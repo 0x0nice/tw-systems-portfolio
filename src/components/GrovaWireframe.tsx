@@ -429,9 +429,11 @@ function categoryLabelVariants(index: number) {
 export default function GrovaWireframe({
   className = "",
   active,
+  disableHover = false,
 }: {
   className?: string;
   active?: boolean;
+  disableHover?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
@@ -448,7 +450,7 @@ export default function GrovaWireframe({
       className={className}
       initial="hidden"
       animate={currentVariant}
-      whileHover="hover"
+      whileHover={disableHover ? undefined : "hover"}
       variants={{
         hidden: {
           filter: "drop-shadow(0 0 0px rgba(82,183,116,0))",

@@ -9,7 +9,7 @@ import { PROJECTS } from "@/lib/projects";
 export default function Home() {
   return (
     <PageTransition>
-      <div className="mx-auto max-w-7xl px-6 pt-28 pb-24 md:px-12">
+      <div className="mx-auto max-w-7xl px-4 pt-20 pb-16 sm:px-6 sm:pt-24 sm:pb-20 md:px-12 md:pt-28 md:pb-24">
         {/* Hero */}
         <HeroBootSequence />
 
@@ -23,7 +23,7 @@ export default function Home() {
           >
             System Registry
           </motion.p>
-          <div className="grid grid-cols-1 auto-rows-fr gap-px border border-[#333333] bg-[#333333] md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-px border border-[#333333] bg-[#333333] md:grid-cols-2 md:auto-rows-fr lg:grid-cols-3">
             {PROJECTS.map((project, i) => (
               <SystemCard key={project.slug} project={project} index={i} />
             ))}

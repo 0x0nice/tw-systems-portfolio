@@ -270,7 +270,7 @@ export default function AboutPage() {
                       transition={{ duration: 0.3, ease: [0.25, 0.4, 0.25, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="px-6 pb-6 pl-16 text-sm leading-relaxed text-[#878787]">
+                      <p className="px-6 pb-6 pl-10 sm:pl-16 text-sm leading-relaxed text-[#878787]">
                         {value.description}
                       </p>
                     </motion.div>
