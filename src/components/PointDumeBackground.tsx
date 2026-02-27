@@ -4,7 +4,14 @@ import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useSceneToggle } from "@/context/SceneToggleContext";
-import { Terrain, Ocean, Sun, CameraRig } from "@/components/PointDumeScene";
+import {
+  Cliff,
+  Beach,
+  Ocean,
+  Hills,
+  Sun,
+  CameraRig,
+} from "@/components/PointDumeScene";
 
 export default function PointDumeBackground() {
   const { enabled } = useSceneToggle();
@@ -15,7 +22,7 @@ export default function PointDumeBackground() {
     <Canvas
       dpr={[1, 2]}
       gl={{ antialias: false, alpha: false }}
-      camera={{ position: [0, 4, 12], fov: 55, near: 0.1, far: 100 }}
+      camera={{ position: [0, 3.5, 14], fov: 55, near: 0.1, far: 100 }}
       style={{
         position: "fixed",
         top: 0,
@@ -26,21 +33,21 @@ export default function PointDumeBackground() {
       }}
       onCreated={({ gl, scene }) => {
         gl.setClearColor("#0A0A0A");
-        scene.fog = new THREE.FogExp2("#0A0A0A", 0.035);
+        scene.fog = new THREE.FogExp2("#0A0A0A", 0.024);
       }}
     >
-      <ambientLight intensity={0.15} />
-
       <CameraRig />
-      <Terrain />
+      <Cliff />
+      <Beach />
       <Ocean />
+      <Hills />
       <Sun />
 
       <EffectComposer>
         <Bloom
-          luminanceThreshold={0.5}
+          luminanceThreshold={0.2}
           luminanceSmoothing={0.9}
-          intensity={1.8}
+          intensity={2.5}
           mipmapBlur
         />
       </EffectComposer>
