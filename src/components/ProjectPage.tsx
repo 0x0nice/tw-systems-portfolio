@@ -6,6 +6,9 @@ import { ExternalLink } from "lucide-react";
 import PageTransition from "./PageTransition";
 import IsometricSVG from "./IsometricSVG";
 import { TRADEOS_SVG, GROVA_SVG, ZERO_SVG } from "./IsometricSVG";
+import TradeOsWireframe from "./TradeOsWireframe";
+import GrovaWireframe from "./GrovaWireframe";
+import ZeroWireframe from "./ZeroWireframe";
 import type { Project } from "@/lib/projects";
 
 const SVG_MAP: Record<string, typeof TRADEOS_SVG> = {
@@ -69,15 +72,29 @@ export default function ProjectPage({ project }: { project: Project }) {
         </div>
 
         {/* SVG Schematic */}
-        <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
-          <IsometricSVG
-            layers={SVG_MAP[project.slug] || TRADEOS_SVG}
-            color={project.color}
-            width={360}
-            height={320}
-            active
-          />
-        </div>
+        {project.slug === "tradeos" ? (
+          <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
+            <TradeOsWireframe className="w-full max-w-[800px]" />
+          </div>
+        ) : project.slug === "grova" ? (
+          <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
+            <GrovaWireframe className="w-full max-w-[800px]" />
+          </div>
+        ) : project.slug === "zero" ? (
+          <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
+            <ZeroWireframe className="w-full max-w-[800px]" />
+          </div>
+        ) : (
+          <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
+            <IsometricSVG
+              layers={SVG_MAP[project.slug] || TRADEOS_SVG}
+              color={project.color}
+              width={360}
+              height={320}
+              active
+            />
+          </div>
+        )}
 
         {/* Scrolling sections with left-border accent */}
         <div className="space-y-0">
@@ -94,9 +111,8 @@ export default function ProjectPage({ project }: { project: Project }) {
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, x: -8 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + i * 0.1 }}
                   className="border border-[#333333] p-6"
                 >
                   <div className="mb-2 flex items-center gap-3">
@@ -131,9 +147,8 @@ export default function ProjectPage({ project }: { project: Project }) {
                 <motion.li
                   key={i}
                   initial={{ opacity: 0, x: -8 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + i * 0.08 }}
                   className="flex gap-3 text-sm text-[#878787]"
                 >
                   <span style={{ color: project.color }}>--</span>

@@ -63,15 +63,15 @@ export default function Home() {
         <section id="systems" className="mb-24">
           <motion.p
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
             className="mb-8 text-xs uppercase tracking-[0.3em] text-[#878787]"
           >
             System Registry
           </motion.p>
-          <div className="grid grid-cols-1 gap-px border border-[#333333] bg-[#333333] md:grid-cols-2 lg:grid-cols-3">
-            {PROJECTS.map((project) => (
-              <SystemCard key={project.slug} project={project} />
+          <div className="grid grid-cols-1 auto-rows-fr gap-px border border-[#333333] bg-[#333333] md:grid-cols-2 lg:grid-cols-3">
+            {PROJECTS.map((project, i) => (
+              <SystemCard key={project.slug} project={project} index={i} />
             ))}
           </div>
         </section>

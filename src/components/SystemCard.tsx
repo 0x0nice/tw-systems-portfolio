@@ -9,6 +9,9 @@ import {
   GROVA_SVG,
   ZERO_SVG,
 } from "./IsometricSVG";
+import TradeOsWireframe from "./TradeOsWireframe";
+import GrovaWireframe from "./GrovaWireframe";
+import ZeroWireframe from "./ZeroWireframe";
 import type { Project } from "@/lib/projects";
 
 const SVG_MAP: Record<string, typeof TRADEOS_SVG> = {
@@ -17,19 +20,18 @@ const SVG_MAP: Record<string, typeof TRADEOS_SVG> = {
   zero: ZERO_SVG,
 };
 
-export default function SystemCard({ project }: { project: Project }) {
+export default function SystemCard({ project, index = 0 }: { project: Project; index?: number }) {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <Link href={`/projects/${project.slug}`}>
+    <Link href={`/projects/${project.slug}`} className="h-full">
       <motion.div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         initial={{ opacity: 0, y: 12 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
-        className="group relative flex min-h-[420px] cursor-pointer flex-col justify-between overflow-hidden border border-[#333333] bg-[rgba(23,23,23,0.4)] p-8 backdrop-blur-md transition-colors duration-300 hover:border-[#878787]"
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 * index, ease: [0.25, 0.4, 0.25, 1] }}
+        className="group relative flex min-h-[420px] cursor-pointer flex-col overflow-hidden border border-[#333333] bg-[rgba(23,23,23,0.4)] p-8 backdrop-blur-md transition-colors duration-300 hover:border-[#878787] h-full"
       >
         {/* Color wash on hover */}
         <motion.div
@@ -61,24 +63,43 @@ export default function SystemCard({ project }: { project: Project }) {
           <p className="mb-1 text-xs uppercase tracking-widest text-[#878787]">
             {project.tagline}
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-[#878787]">
-            {project.thesis}
-          </p>
         </div>
 
-        {/* SVG graphic */}
-        <div className="relative z-10 mt-6 flex justify-center">
-          <IsometricSVG
-            layers={SVG_MAP[project.slug] || TRADEOS_SVG}
-            color={project.color}
-            width={240}
-            height={220}
-            active={hovered}
-          />
+        {/* SVG graphic — flows straight down from title */}
+        <div className="relative z-10 mt-4 flex justify-center">
+          {project.slug === "tradeos" ? (
+            <TradeOsWireframe
+              className="w-full max-w-[320px]"
+              active={hovered}
+            />
+          ) : project.slug === "grova" ? (
+            <GrovaWireframe
+              className="w-full max-w-[320px]"
+              active={hovered}
+            />
+          ) : project.slug === "zero" ? (
+            <ZeroWireframe
+              className="w-full max-w-[320px]"
+              active={hovered}
+            />
+          ) : (
+            <IsometricSVG
+              layers={SVG_MAP[project.slug] || TRADEOS_SVG}
+              color={project.color}
+              width={240}
+              height={220}
+              active={hovered}
+            />
+          )}
         </div>
 
-        {/* Tech tags */}
-        <div className="relative z-10 mt-6 flex flex-wrap gap-2">
+        {/* Thesis */}
+        <p className="relative z-10 mt-4 text-sm leading-relaxed text-[#878787]">
+          {project.thesis}
+        </p>
+
+        {/* Tech tags — pushed to bottom */}
+        <div className="relative z-10 mt-auto pt-4 flex flex-wrap gap-2">
           {project.tech.map((item) => (
             <span
               key={item}

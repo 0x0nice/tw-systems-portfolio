@@ -4,6 +4,61 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import PageTransition from "@/components/PageTransition";
 
+const TIMELINE = [
+  {
+    period: "Jul 2020 — Apr 2021",
+    role: "Financial Services Representative",
+    org: "TD Ameritrade",
+    detail:
+      "Client onboarding, trade execution, and account maintenance in a high-volume service environment. Earned Series 7 and Series 63 licenses while building a foundation in client-facing financial services.",
+  },
+  {
+    period: "Apr 2021 — Apr 2022",
+    role: "Retail Trading Specialist",
+    org: "TD Ameritrade",
+    detail:
+      "Guided active retail clients through multi-leg options strategies, rollouts, and margin impact scenarios. Aligned trading discussions with individual risk tolerance and behavioral discipline.",
+  },
+  {
+    period: "Apr 2022 — Dec 2025",
+    role: "Senior Trading Specialist",
+    org: "TD Ameritrade → Charles Schwab",
+    detail:
+      "Primary contact for Schwab's most active trading clients. Completed Trader 3 Academy. Advanced futures, options, and portfolio margin support in top-tier active trader queues. Recognized for exceptional client satisfaction and ability to translate complexity into actionable guidance.",
+  },
+  {
+    period: "Dec 2025 — Present",
+    role: "Trading Manager — Derivatives",
+    org: "Charles Schwab",
+    detail:
+      "Primary escalation point for the firm's most sophisticated, high-net-worth and professional-level traders across futures, options, portfolio margin, and complex risk scenarios. Designated Cryptocurrency Subject Matter Expert — led firmwide digital asset education in partnership with legal, compliance, and senior leadership.",
+  },
+];
+
+const CREDENTIALS = [
+  {
+    category: "Licenses",
+    items: [
+      "Series 3 — National Commodity Futures",
+      "Series 7 — General Securities Representative",
+      "Series 63 — Uniform Securities Agent State Law",
+      "Securities Industry Essentials (SIE)",
+    ],
+  },
+  {
+    category: "Certifications",
+    items: ["DACFP — Certified in Blockchain & Digital Assets"],
+  },
+  {
+    category: "Education",
+    items: [
+      "University of Missouri — Columbia",
+      "100 credit hours toward B.S. in Psychology",
+      "Cognitive Psychology · Brain & Behavior · Research Methods",
+    ],
+  },
+];
+
 const VALUES = [
   {
     id: "01",
@@ -43,21 +98,6 @@ const VALUES = [
   },
 ];
 
-const TIMELINE = [
-  {
-    period: "2016 — 2023",
-    role: "Derivatives Trading Manager",
-    detail:
-      "Managed options and equity derivative portfolios. Developed quantitative frameworks for risk decomposition, behavioral pattern recognition, and execution quality analysis.",
-  },
-  {
-    period: "2023 — Present",
-    role: "Systems Architect / Builder",
-    detail:
-      "Transitioned from trading desks to building the tools I wished existed. Finance-native AI systems, behavioral verification engines, and feedback triage infrastructure.",
-  },
-];
-
 export default function AboutPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -72,14 +112,20 @@ export default function AboutPage() {
           <h1 className="mb-6 font-serif text-5xl md:text-7xl">
             Thomas Williams
           </h1>
+          <p className="mb-3 text-sm uppercase tracking-widest text-[#005ECC]">
+            Trading Manager — Derivatives, Futures & Digital Assets
+          </p>
           <p className="max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base">
-            Derivatives trading manager turned systems architect. I build
-            high-performance infrastructure at the intersection of markets, AI,
-            and product design — tools for people who take their craft seriously.
+            Trading Manager at Charles Schwab, supporting the firm's most
+            sophisticated derivatives traders across futures, options, and
+            portfolio margin. Designated Cryptocurrency Subject Matter Expert.
+            After hours, a self-taught systems builder — applying the same
+            analytical rigor from trading floors to software at the intersection
+            of behavioral psychology, AI, and markets.
           </p>
         </div>
 
-        {/* Timeline */}
+        {/* Trajectory */}
         <section className="mb-20">
           <p className="mb-8 text-xs uppercase tracking-[0.3em] text-[#878787]">
             Trajectory
@@ -89,18 +135,100 @@ export default function AboutPage() {
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 8 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + i * 0.1 }}
                 className="border-l-2 border-[#333333] py-8 pl-8 transition-colors hover:border-[#005ECC] md:pl-12"
               >
-                <p className="mb-2 text-xs uppercase tracking-widest text-[#005ECC]">
-                  {entry.period}
-                </p>
+                <div className="mb-2 flex flex-wrap items-baseline gap-3">
+                  <p className="text-xs uppercase tracking-widest text-[#005ECC]">
+                    {entry.period}
+                  </p>
+                  <span className="text-xs tracking-wider text-[#878787]">
+                    {entry.org}
+                  </span>
+                </div>
                 <h3 className="mb-3 font-serif text-2xl">{entry.role}</h3>
                 <p className="max-w-xl text-sm leading-relaxed text-[#878787]">
                   {entry.detail}
                 </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Building After Hours */}
+        <section className="mb-20">
+          <p className="mb-8 text-xs uppercase tracking-[0.3em] text-[#878787]">
+            Building After Hours
+          </p>
+          <div className="space-y-6 border border-[#333333] bg-[rgba(23,23,23,0.4)] p-8 md:p-12">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="max-w-2xl text-sm leading-relaxed text-[#EDEDED] md:text-base"
+            >
+              Five years of supporting Schwab's most sophisticated traders
+              creates a specific kind of knowledge — you see where the tools
+              fail people and where decision-making breaks down. At some point,
+              describing the problem stops being enough.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base"
+            >
+              These systems are the result. A behavioral verification engine
+              built from thousands of real trading conversations. An AI triage
+              platform that scores signal from noise using Claude. A computer
+              vision app that gamifies household operations with on-device
+              spatial analysis. Self-taught across React, Python, Node.js, and
+              AI integration — every project solves a problem I've personally
+              encountered.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base"
+            >
+              The through-line is cognitive psychology. Three years of
+              coursework at Mizzou studying how humans make decisions under
+              pressure, applied across five years on the trading desk, distilled
+              into software that enforces deliberate process over reactive
+              impulse.
+            </motion.p>
+          </div>
+        </section>
+
+        {/* Credentials */}
+        <section className="mb-20">
+          <p className="mb-8 text-xs uppercase tracking-[0.3em] text-[#878787]">
+            Credentials
+          </p>
+          <div className="grid grid-cols-1 gap-px border border-[#333333] bg-[#333333] md:grid-cols-3">
+            {CREDENTIALS.map((group, i) => (
+              <motion.div
+                key={group.category}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.1 }}
+                className="bg-[#0A0A0A] p-6"
+              >
+                <p className="mb-4 text-xs uppercase tracking-widest text-[#005ECC]">
+                  {group.category}
+                </p>
+                <ul className="space-y-2">
+                  {group.items.map((item) => (
+                    <li
+                      key={item}
+                      className="text-xs leading-relaxed text-[#878787]"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </motion.div>
             ))}
           </div>
