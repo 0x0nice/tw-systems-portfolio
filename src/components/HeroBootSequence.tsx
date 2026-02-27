@@ -222,13 +222,15 @@ export default function HeroBootSequence() {
         <div className="mt-8 sm:mt-10 flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm uppercase tracking-widest">
           <a
             href="#systems"
-            className="text-[#EDEDED] transition-colors hover:text-[#005ECC]"
+            className="transition-colors hover:text-[#005ECC]"
+            style={{ color: "#EDEDED" }}
           >
             [ Inspect Systems ]
           </a>
           <a
             href="/about"
-            className="text-[#878787] transition-colors hover:text-[#EDEDED]"
+            className="transition-colors hover:text-[#EDEDED]"
+            style={{ color: "#878787" }}
           >
             [ The Builder ]
           </a>
