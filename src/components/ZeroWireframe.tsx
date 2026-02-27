@@ -442,7 +442,7 @@ export default function ZeroWireframe({
       }}
     >
       <svg
-        viewBox="250 180 300 200"
+        viewBox="250 170 300 220"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         role="img"

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import SystemCard from "@/components/SystemCard";
 import PageTransition from "@/components/PageTransition";
+import HeroBootSequence from "@/components/HeroBootSequence";
 import { PROJECTS } from "@/lib/projects";
 
 export default function Home() {
@@ -10,54 +11,7 @@ export default function Home() {
     <PageTransition>
       <div className="mx-auto max-w-7xl px-6 pt-28 pb-24 md:px-12">
         {/* Hero */}
-        <section className="mb-32 mt-8 md:mt-16">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]"
-          >
-            Systems Architecture / Portfolio
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="font-serif text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl"
-          >
-            Architecting <br />
-            Decision Systems.
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8 max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base"
-          >
-            I build high-performance infrastructure for serious operators.
-            Merging behavioral psychology with rigorous technical execution to
-            create tools that think, filter, and verify.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-10 flex gap-6 text-sm uppercase tracking-widest"
-          >
-            <a
-              href="#systems"
-              className="text-[#EDEDED] transition-colors hover:text-[#005ECC]"
-            >
-              [ Inspect Systems ]
-            </a>
-            <a
-              href="/about"
-              className="text-[#878787] transition-colors hover:text-[#EDEDED]"
-            >
-              [ The Operator ]
-            </a>
-          </motion.div>
-        </section>
+        <HeroBootSequence />
 
         {/* The Matrix */}
         <section id="systems" className="mb-24">
@@ -92,7 +46,7 @@ export default function Home() {
                 GitHub
               </a>
               <a
-                href="https://linkedin.com/in/"
+                href="https://www.linkedin.com/in/t-williams1/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition-colors hover:text-[#EDEDED]"

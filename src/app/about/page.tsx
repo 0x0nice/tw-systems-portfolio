@@ -107,7 +107,7 @@ export default function AboutPage() {
         {/* Header */}
         <div className="mb-20 border-b border-[#333333] pb-12">
           <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]">
-            The Operator
+            The Builder
           </p>
           <h1 className="mb-6 font-serif text-5xl md:text-7xl">
             Thomas Williams
@@ -296,7 +296,7 @@ export default function AboutPage() {
               GitHub
             </a>
             <a
-              href="https://linkedin.com/in/"
+              href="https://www.linkedin.com/in/t-williams1/"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-[#333333] px-5 py-3 text-xs uppercase tracking-widest text-[#878787] transition-colors hover:border-[#878787] hover:text-[#EDEDED]"

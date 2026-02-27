@@ -423,7 +423,7 @@ export default function TradeOsWireframe({
       }}
     >
       <svg
-        viewBox="185 155 350 270"
+        viewBox="185 145 350 300"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         role="img"

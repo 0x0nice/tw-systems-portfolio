@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useBootAnimation } from "@/context/BootAnimationContext";
 
 export default function Nav() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const { enabled, toggle } = useBootAnimation();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[#333333] bg-[#0A0A0A]/90 backdrop-blur-md">
@@ -27,7 +29,21 @@ export default function Nav() {
             </span>
           )}
         </div>
-        <div className="flex gap-6 text-xs uppercase tracking-widest">
+        <div className="flex items-center gap-6 text-xs uppercase tracking-widest">
+          {isHome && (
+            <button
+              onClick={toggle}
+              className="flex items-center gap-2 text-[#878787] transition-colors hover:text-[#EDEDED]"
+              title={enabled ? "Disable boot animation" : "Enable boot animation"}
+            >
+              <span className="text-[10px] tracking-widest">Boot</span>
+              <span
+                className={`inline-block h-2 w-2 rounded-full transition-colors ${
+                  enabled ? "bg-[#00F5D4]" : "bg-[#333333]"
+                }`}
+              />
+            </button>
+          )}
           <Link
             href="/"
             className={`transition-colors ${
@@ -44,7 +60,7 @@ export default function Nav() {
                 : "text-[#878787] hover:text-[#EDEDED]"
             }`}
           >
-            Operator
+            The Builder
           </Link>
         </div>
       </div>
