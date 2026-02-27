@@ -6,20 +6,23 @@
   --gray: #878787;
   --grid: #333333;
   --cobalt: #005ECC;
-  --emerald: #0A7A55;
+  --emerald: #00c87a;
+  --cyan: #00F5D4;
+  --orange: #ff6a00;
   --glass: rgba(23, 23, 23, 0.4);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-offBlack: #0A0A0A;
   --color-softWhite: #EDEDED;
   --color-techGray: #878787;
   --color-cadLine: #333333;
   --color-cobalt: #005ECC;
-  --color-emerald: #0A7A55;
-  --color-glass: var(--glass);
+  --color-emerald: #00c87a;
+  --color-cyan: #00F5D4;
+  --color-orange: #ff6a00;
+  --color-glass: rgba(23, 23, 23, 0.4);
   --font-sans: var(--font-geist-mono);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-instrument-serif);
@@ -32,10 +35,24 @@ html {
 body {
   background-color: #0A0A0A;
   color: #EDEDED;
-  font-family: var(--font-geist-mono), monospace;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 ::selection {
-  background: var(--cobalt);
+  background: rgba(0, 94, 204, 0.4);
   color: white;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+::-webkit-scrollbar-thumb {
+  background: #333333;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #878787;
 }
