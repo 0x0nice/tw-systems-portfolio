@@ -56,3 +56,31 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #878787;
 }
+
+/* Hero fade-in (Safari-safe — pure CSS, no Framer Motion) */
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-fade {
+  animation: heroFadeIn 0.6s ease-out both;
+}
+
+/* Hero CTA links — classes instead of inline styles so :hover works */
+.hero-cta {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.hero-cta-primary {
+  color: #EDEDED;
+}
+.hero-cta-primary:hover {
+  color: #005ECC;
+}
+.hero-cta-secondary {
+  color: #878787;
+}
+.hero-cta-secondary:hover {
+  color: #EDEDED;
+}

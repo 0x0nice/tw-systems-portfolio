@@ -200,34 +200,39 @@ export default function HeroBootSequence() {
     opacity: line.scattered.opacity,
   });
 
-  // ── Static render (no Framer Motion) — Safari-safe, used when boot animation is off ──
+  // ── Static render (no Framer Motion) — Safari-safe, uses pure CSS animations ──
   if (noMotion) {
     return (
       <section className="mb-16 mt-4 sm:mb-24 sm:mt-8 md:mb-32 md:mt-16">
-        <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]">
+        <p
+          className="hero-fade mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]"
+        >
           Systems Architecture / Portfolio
         </p>
         <h1
-          className="font-serif text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl"
-          style={{ color: "#EDEDED" }}
+          className="hero-fade font-serif text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl"
+          style={{ color: "#EDEDED", animationDelay: "0.1s" }}
         >
           Architecting <br />
           Decision Systems.
         </h1>
-        <p className="mt-8 max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base">
+        <p
+          className="hero-fade mt-8 max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base"
+          style={{ animationDelay: "0.3s" }}
+        >
           I build high-performance infrastructure for serious operators.
           Merging behavioral psychology with rigorous technical execution to
           create tools that think, filter, and verify.
         </p>
         <p
-          className="mt-8 sm:mt-10 text-xs sm:text-sm uppercase tracking-widest"
-          style={{ color: "#878787" }}
+          className="hero-fade mt-8 sm:mt-10 text-xs sm:text-sm uppercase tracking-widest"
+          style={{ animationDelay: "0.5s" }}
         >
-          <a href="#systems" style={{ color: "#EDEDED" }}>
+          <a href="#systems" className="hero-cta hero-cta-primary">
             [ Inspect Systems ]
           </a>
           &nbsp;&nbsp;&nbsp;
-          <a href="/about" style={{ color: "#878787" }}>
+          <a href="/about" className="hero-cta hero-cta-secondary">
             [ The Builder ]
           </a>
         </p>
