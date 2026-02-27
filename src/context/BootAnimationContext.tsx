@@ -21,12 +21,17 @@ export function BootAnimationProvider({
 }) {
   const [enabled, setEnabled] = useState(false);
 
-  // Sync with localStorage before first paint to avoid flash
-  useLayoutEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === "on") {
-      setEnabled(true);
-    }
-  }, []);
+  // Boot toggle is hidden — don't restore from localStorage until re-enabled.
+  // Previous "on" values in localStorage were causing a hydration mismatch
+  // on desktop Safari: server renders static HTML, client switches to animated
+  // path mid-hydration, Framer Motion animations fail, content stays invisible.
+  //
+  // Uncomment when the boot animation toggle is re-enabled in Nav:
+  // useLayoutEffect(() => {
+  //   if (localStorage.getItem(STORAGE_KEY) === "on") {
+  //     setEnabled(true);
+  //   }
+  // }, []);
 
   const toggle = () => {
     setEnabled((prev) => {
