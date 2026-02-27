@@ -9,6 +9,7 @@ import { TRADEOS_SVG, GROVA_SVG, ZERO_SVG } from "./IsometricSVG";
 import TradeOsWireframe from "./TradeOsWireframe";
 import GrovaWireframe from "./GrovaWireframe";
 import ZeroWireframe from "./ZeroWireframe";
+import { useTouchDevice } from "@/hooks/useTouchDevice";
 import type { Project } from "@/lib/projects";
 
 const SVG_MAP: Record<string, typeof TRADEOS_SVG> = {
@@ -49,6 +50,16 @@ function Section({
 }
 
 export default function ProjectPage({ project }: { project: Project }) {
+  const isTouch = useTouchDevice();
+  const wireframeRef = useRef<HTMLDivElement>(null);
+  const wireframeInView = useInView(wireframeRef, {
+    margin: "-20% 0px -20% 0px",
+  });
+
+  // On touch devices, activate wireframe when scrolled into view
+  // On desktop, whileHover handles it inside the wireframe component
+  const wireframeActive = isTouch ? wireframeInView : undefined;
+
   return (
     <PageTransition>
       <div className="mx-auto max-w-5xl px-6 pt-28 pb-24 md:px-12">
@@ -73,19 +84,19 @@ export default function ProjectPage({ project }: { project: Project }) {
 
         {/* SVG Schematic */}
         {project.slug === "tradeos" ? (
-          <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
-            <TradeOsWireframe className="w-full max-w-[800px]" />
+          <div ref={wireframeRef} className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
+            <TradeOsWireframe className="w-full max-w-[800px]" active={wireframeActive} disableHover={isTouch} />
           </div>
         ) : project.slug === "grova" ? (
-          <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
-            <GrovaWireframe className="w-full max-w-[800px]" />
+          <div ref={wireframeRef} className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
+            <GrovaWireframe className="w-full max-w-[800px]" active={wireframeActive} disableHover={isTouch} />
           </div>
         ) : project.slug === "zero" ? (
-          <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
-            <ZeroWireframe className="w-full max-w-[800px]" />
+          <div ref={wireframeRef} className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
+            <ZeroWireframe className="w-full max-w-[800px]" active={wireframeActive} disableHover={isTouch} />
           </div>
         ) : (
-          <div className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
+          <div ref={wireframeRef} className="mb-16 flex justify-center border border-[#333333] bg-[rgba(23,23,23,0.3)] p-8">
             <IsometricSVG
               layers={SVG_MAP[project.slug] || TRADEOS_SVG}
               color={project.color}
