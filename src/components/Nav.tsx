@@ -4,11 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useBootAnimation } from "@/context/BootAnimationContext";
+import { useSceneToggle } from "@/context/SceneToggleContext";
 
 export default function Nav() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const { enabled, toggle } = useBootAnimation();
+  const { enabled: sceneEnabled, toggle: toggleScene } = useSceneToggle();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[#333333] bg-[#0A0A0A]/90 backdrop-blur-md">
@@ -30,6 +32,22 @@ export default function Nav() {
           )}
         </div>
         <div className="flex items-center gap-3 sm:gap-4 md:gap-6 text-xs uppercase tracking-widest">
+          {/* 3D scene toggle */}
+          <button
+            onClick={toggleScene}
+            className="flex items-center gap-1 sm:gap-2 text-[#878787] transition-colors hover:text-[#EDEDED]"
+            title={sceneEnabled ? "Disable 3D background" : "Enable 3D background"}
+          >
+            <span className="hidden sm:inline text-[10px] tracking-widest">
+              Scene
+            </span>
+            <span
+              className={`inline-block h-2 w-2 rounded-full transition-colors ${
+                sceneEnabled ? "bg-[#00F5D4]" : "bg-[#333333]"
+              }`}
+            />
+          </button>
+
           {/* Boot toggle hidden until animation is polished
           {isHome && (
             <button

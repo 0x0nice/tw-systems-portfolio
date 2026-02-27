@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import { Instrument_Serif } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import Nav from "@/components/Nav";
+import SceneLoader from "@/components/SceneLoader";
 import { BootAnimationProvider } from "@/context/BootAnimationContext";
+import { SceneToggleProvider } from "@/context/SceneToggleContext";
 
 const instrumentSerif = Instrument_Serif({
   weight: "400",
@@ -35,8 +37,11 @@ export default function RootLayout({
     >
       <body className="bg-[#0A0A0A] text-[#EDEDED] font-mono antialiased">
         <BootAnimationProvider>
-          <Nav />
-          {children}
+          <SceneToggleProvider>
+            <SceneLoader />
+            <Nav />
+            {children}
+          </SceneToggleProvider>
         </BootAnimationProvider>
       </body>
     </html>
