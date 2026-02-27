@@ -239,7 +239,7 @@ export default function HeroBootSequence() {
         {gridLines.map((line) => (
           <motion.line
             key={line.id}
-            initial={noMotion ? false : scatteredLine(line)}
+            initial={noMotion ? assembledLine(line) : scatteredLine(line)}
             animate={isAssembling ? assembledLine(line) : scatteredLine(line)}
             transition={
               noMotion
@@ -292,7 +292,7 @@ export default function HeroBootSequence() {
       <div className="relative z-10">
         {/* Subtitle */}
         <motion.p
-          initial={noMotion ? false : { opacity: 0 }}
+          initial={noMotion ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: showContent ? 1 : 0 }}
           transition={noMotion ? { duration: 0 } : { duration: 0.6, delay: showContent ? 0.2 : 0 }}
           className="mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]"
@@ -305,9 +305,14 @@ export default function HeroBootSequence() {
           {/* Clean resolved layer (serif) — in flow, revealed via clip-path wipe */}
           <h1
             className="font-serif text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl"
-            style={{
-              clipPath: `inset(0 ${(1 - wipeProgress) * 100}% 0 0)`,
-            }}
+            style={
+              noMotion || wipeProgress >= 1
+                ? undefined
+                : {
+                    clipPath: `inset(0 ${(1 - wipeProgress) * 100}% 0 0)`,
+                    WebkitClipPath: `inset(0 ${(1 - wipeProgress) * 100}% 0 0)`,
+                  }
+            }
           >
             Architecting <br />
             Decision Systems.
@@ -387,7 +392,7 @@ export default function HeroBootSequence() {
 
         {/* Description */}
         <motion.p
-          initial={noMotion ? false : { opacity: 0, y: 8 }}
+          initial={noMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
           animate={{
             opacity: showContent ? 1 : 0,
             y: showContent ? 0 : 8,
@@ -402,7 +407,7 @@ export default function HeroBootSequence() {
 
         {/* CTAs */}
         <motion.div
-          initial={noMotion ? false : { opacity: 0 }}
+          initial={noMotion ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: showContent ? 1 : 0 }}
           transition={noMotion ? { duration: 0 } : { duration: 0.6, delay: showContent ? 0.6 : 0 }}
           className="mt-8 sm:mt-10 flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm uppercase tracking-widest"
