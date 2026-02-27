@@ -200,6 +200,62 @@ export default function HeroBootSequence() {
     opacity: line.scattered.opacity,
   });
 
+  // ── Static render (no Framer Motion) — Safari-safe, used when boot animation is off ──
+  if (noMotion) {
+    return (
+      <section className="relative mb-16 mt-4 sm:mb-24 sm:mt-8 md:mb-32 md:mt-16 overflow-hidden">
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox="0 0 1200 600"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          {gridLines.map((line) => (
+            <line
+              key={line.id}
+              x1={line.x1}
+              y1={line.y1}
+              x2={line.x2}
+              y2={line.y2}
+              stroke="#333333"
+              strokeWidth={0.5}
+              opacity={0.15}
+            />
+          ))}
+        </svg>
+        <div className="relative z-10">
+          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]">
+            Systems Architecture / Portfolio
+          </p>
+          <h1 className="font-serif text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl">
+            Architecting <br />
+            Decision Systems.
+          </h1>
+          <p className="mt-8 max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base">
+            I build high-performance infrastructure for serious operators.
+            Merging behavioral psychology with rigorous technical execution to
+            create tools that think, filter, and verify.
+          </p>
+          <div className="mt-8 sm:mt-10 flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm uppercase tracking-widest">
+            <a
+              href="#systems"
+              className="text-[#EDEDED] transition-colors hover:text-[#005ECC]"
+            >
+              [ Inspect Systems ]
+            </a>
+            <a
+              href="/about"
+              className="text-[#878787] transition-colors hover:text-[#EDEDED]"
+            >
+              [ The Builder ]
+            </a>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ── Animated render (boot animation enabled) ──────────────────────────────
   return (
     <section className="relative mb-16 mt-4 sm:mb-24 sm:mt-8 md:mb-32 md:mt-16 overflow-hidden">
       {/* ── SVG Background Grid ─────────────────────────────────────────── */}
@@ -209,92 +265,86 @@ export default function HeroBootSequence() {
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
       >
-        {!noMotion && (
-          <defs>
-            <filter id="rgb-split">
-              <feColorMatrix
-                type="matrix"
-                values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
-                result="red"
-              />
-              <feOffset in="red" dx="3" dy="0" result="red-shifted" />
-              <feColorMatrix
-                type="matrix"
-                values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"
-                result="blue"
-              />
-              <feOffset in="blue" dx="-3" dy="0" result="blue-shifted" />
-              <feColorMatrix
-                in="SourceGraphic"
-                type="matrix"
-                values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"
-                result="green"
-              />
-              <feBlend mode="screen" in="red-shifted" in2="green" result="rg" />
-              <feBlend mode="screen" in="rg" in2="blue-shifted" />
-            </filter>
-          </defs>
-        )}
+        <defs>
+          <filter id="rgb-split">
+            <feColorMatrix
+              type="matrix"
+              values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
+              result="red"
+            />
+            <feOffset in="red" dx="3" dy="0" result="red-shifted" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"
+              result="blue"
+            />
+            <feOffset in="blue" dx="-3" dy="0" result="blue-shifted" />
+            <feColorMatrix
+              in="SourceGraphic"
+              type="matrix"
+              values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"
+              result="green"
+            />
+            <feBlend mode="screen" in="red-shifted" in2="green" result="rg" />
+            <feBlend mode="screen" in="rg" in2="blue-shifted" />
+          </filter>
+        </defs>
 
         {gridLines.map((line) => (
           <motion.line
             key={line.id}
-            initial={noMotion ? assembledLine(line) : scatteredLine(line)}
+            initial={scatteredLine(line)}
             animate={isAssembling ? assembledLine(line) : scatteredLine(line)}
             transition={
-              noMotion
-                ? { duration: 0 }
-                : isAssembling
-                  ? {
-                      type: "spring",
-                      stiffness: 120,
-                      damping: 14,
-                      mass: 0.8,
-                      delay: line.assemblyDelay,
-                    }
-                  : { duration: 0.15, repeat: Infinity, repeatType: "mirror" as const }
+              isAssembling
+                ? {
+                    type: "spring",
+                    stiffness: 120,
+                    damping: 14,
+                    mass: 0.8,
+                    delay: line.assemblyDelay,
+                  }
+                : { duration: 0.15, repeat: Infinity, repeatType: "mirror" as const }
             }
             stroke="#333333"
             strokeWidth={0.5}
-            filter={isGlitching && !noMotion ? "url(#rgb-split)" : "none"}
+            filter={isGlitching ? "url(#rgb-split)" : "none"}
           />
         ))}
       </svg>
 
       {/* ── Scanner Line ────────────────────────────────────────────────── */}
-      {!noMotion && (
-        <motion.div
-          className="pointer-events-none absolute left-0 right-0 z-30"
-          style={{
-            height: "1px",
-            background: "#EDEDED",
-            boxShadow:
-              "0 0 8px 2px rgba(237, 237, 237, 0.3), 0 0 20px 4px rgba(237, 237, 237, 0.1)",
-          }}
-          initial={{ top: 0, opacity: 0 }}
-          animate={
-            scannerActive
-              ? { top: "100%", opacity: [0, 1, 1, 0] }
-              : { top: 0, opacity: 0 }
-          }
-          transition={
-            scannerActive
-              ? {
-                  top: { duration: 2.0, ease: [0.25, 0.4, 0.25, 1] },
-                  opacity: { duration: 2.0, times: [0, 0.05, 0.9, 1] },
-                }
-              : {}
-          }
-        />
-      )}
+      <motion.div
+        className="pointer-events-none absolute left-0 right-0 z-30"
+        style={{
+          height: "1px",
+          background: "#EDEDED",
+          boxShadow:
+            "0 0 8px 2px rgba(237, 237, 237, 0.3), 0 0 20px 4px rgba(237, 237, 237, 0.1)",
+        }}
+        initial={{ top: 0, opacity: 0 }}
+        animate={
+          scannerActive
+            ? { top: "100%", opacity: [0, 1, 1, 0] }
+            : { top: 0, opacity: 0 }
+        }
+        transition={
+          scannerActive
+            ? {
+                top: { duration: 2.0, ease: [0.25, 0.4, 0.25, 1] },
+                opacity: { duration: 2.0, times: [0, 0.05, 0.9, 1] },
+              }
+            : {}
+        }
+      />
 
       {/* ── Hero Content ────────────────────────────────────────────────── */}
       <div className="relative z-10">
         {/* Subtitle */}
         <motion.p
-          initial={noMotion ? { opacity: 1 } : { opacity: 0 }}
+          initial={{ opacity: 0 }}
           animate={{ opacity: showContent ? 1 : 0 }}
-          transition={noMotion ? { duration: 0 } : { duration: 0.6, delay: showContent ? 0.2 : 0 }}
+          transition={{ duration: 0.6, delay: showContent ? 0.2 : 0 }}
           className="mb-4 text-xs uppercase tracking-[0.3em] text-[#878787]"
         >
           Systems Architecture / Portfolio
@@ -306,7 +356,7 @@ export default function HeroBootSequence() {
           <h1
             className="font-serif text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl"
             style={
-              noMotion || wipeProgress >= 1
+              wipeProgress >= 1
                 ? undefined
                 : {
                     clipPath: `inset(0 ${(1 - wipeProgress) * 100}% 0 0)`,
@@ -319,85 +369,81 @@ export default function HeroBootSequence() {
           </h1>
 
           {/* Glitch / scramble layer (monospace) — absolute overlay */}
-          {!noMotion && (
-            <motion.h1
-              initial={{ opacity: 1 }}
-              animate={{
-                opacity: isAssembling ? 0 : 1,
-              }}
-              transition={{ duration: 0.6, delay: isAssembling ? 0.3 : 0 }}
-              className="absolute inset-0 text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl"
-              style={{
-                fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
-                textShadow: isGlitching
-                  ? "2px 0 #00F5D4, -2px 0 #FF00FF"
-                  : "none",
-                willChange: phase === "complete" ? "auto" : "transform",
-              }}
-              aria-hidden
-            >
-              <motion.span
-                animate={
-                  isGlitching
-                    ? { x: [0, -3, 2, -1, 3, 0] }
-                    : { x: 0 }
-                }
-                transition={
-                  isGlitching
-                    ? { duration: 0.15, repeat: Infinity, ease: "linear" }
-                    : { duration: 0.3 }
-                }
-                className="inline-block"
-              >
-                {textLines.map((line, i) => (
-                  <span key={i}>
-                    {line}
-                    {i < textLines.length - 1 && <br />}
-                  </span>
-                ))}
-              </motion.span>
-            </motion.h1>
-          )}
-
-          {/* Highlight wipe line */}
-          {!noMotion && (
-            <motion.div
-              className="pointer-events-none absolute top-0 bottom-0 z-20"
-              style={{
-                width: "2px",
-                left: `${wipeProgress * 100}%`,
-                background: "#EDEDED",
-                boxShadow:
-                  "0 0 12px 3px rgba(237, 237, 237, 0.4), 0 0 24px 6px rgba(237, 237, 237, 0.15)",
-              }}
-              initial={{ opacity: 0 }}
+          <motion.h1
+            initial={{ opacity: 1 }}
+            animate={{
+              opacity: isAssembling ? 0 : 1,
+            }}
+            transition={{ duration: 0.6, delay: isAssembling ? 0.3 : 0 }}
+            className="absolute inset-0 text-5xl leading-tight tracking-tight md:text-7xl lg:text-8xl"
+            style={{
+              fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
+              textShadow: isGlitching
+                ? "2px 0 #00F5D4, -2px 0 #FF00FF"
+                : "none",
+              willChange: phase === "complete" ? "auto" : "transform",
+            }}
+            aria-hidden
+          >
+            <motion.span
               animate={
-                isAssembling
-                  ? { opacity: [0, 1, 1, 1, 0] }
-                  : { opacity: 0 }
+                isGlitching
+                  ? { x: [0, -3, 2, -1, 3, 0] }
+                  : { x: 0 }
               }
               transition={
-                isAssembling
-                  ? {
-                      opacity: {
-                        duration: 0.8,
-                        times: [0, 0.05, 0.5, 0.9, 1],
-                      },
-                    }
-                  : {}
+                isGlitching
+                  ? { duration: 0.15, repeat: Infinity, ease: "linear" }
+                  : { duration: 0.3 }
               }
-            />
-          )}
+              className="inline-block"
+            >
+              {textLines.map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < textLines.length - 1 && <br />}
+                </span>
+              ))}
+            </motion.span>
+          </motion.h1>
+
+          {/* Highlight wipe line */}
+          <motion.div
+            className="pointer-events-none absolute top-0 bottom-0 z-20"
+            style={{
+              width: "2px",
+              left: `${wipeProgress * 100}%`,
+              background: "#EDEDED",
+              boxShadow:
+                "0 0 12px 3px rgba(237, 237, 237, 0.4), 0 0 24px 6px rgba(237, 237, 237, 0.15)",
+            }}
+            initial={{ opacity: 0 }}
+            animate={
+              isAssembling
+                ? { opacity: [0, 1, 1, 1, 0] }
+                : { opacity: 0 }
+            }
+            transition={
+              isAssembling
+                ? {
+                    opacity: {
+                      duration: 0.8,
+                      times: [0, 0.05, 0.5, 0.9, 1],
+                    },
+                  }
+                : {}
+            }
+          />
         </div>
 
         {/* Description */}
         <motion.p
-          initial={noMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{
             opacity: showContent ? 1 : 0,
             y: showContent ? 0 : 8,
           }}
-          transition={noMotion ? { duration: 0 } : { duration: 0.6, delay: showContent ? 0.4 : 0 }}
+          transition={{ duration: 0.6, delay: showContent ? 0.4 : 0 }}
           className="mt-8 max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base"
         >
           I build high-performance infrastructure for serious operators.
@@ -407,9 +453,9 @@ export default function HeroBootSequence() {
 
         {/* CTAs */}
         <motion.div
-          initial={noMotion ? { opacity: 1 } : { opacity: 0 }}
+          initial={{ opacity: 0 }}
           animate={{ opacity: showContent ? 1 : 0 }}
-          transition={noMotion ? { duration: 0 } : { duration: 0.6, delay: showContent ? 0.6 : 0 }}
+          transition={{ duration: 0.6, delay: showContent ? 0.6 : 0 }}
           className="mt-8 sm:mt-10 flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm uppercase tracking-widest"
         >
           <a
