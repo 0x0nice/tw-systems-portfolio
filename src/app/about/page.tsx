@@ -53,7 +53,6 @@ const CREDENTIALS = [
     category: "Research",
     items: [
       "Cognitive Psychology · Decision Science · Behavioral Economics",
-      "University of Missouri — Columbia",
     ],
   },
 ];
@@ -193,10 +192,9 @@ export default function AboutPage() {
               className="max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base"
             >
               The through-line is cognitive psychology — how humans make
-              decisions under pressure. Years studying decision science at
-              Mizzou, applied across five years on the trading desk, distilled
-              into software that enforces deliberate process over reactive
-              impulse.
+              decisions under pressure. Years studying decision science,
+              applied across five years on the trading desk, distilled into
+              software that enforces deliberate process over reactive impulse.
             </motion.p>
           </div>
         </section>
