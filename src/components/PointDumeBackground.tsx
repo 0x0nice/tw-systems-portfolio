@@ -33,7 +33,7 @@ export default function PointDumeBackground() {
       }}
       onCreated={({ gl, scene }) => {
         gl.setClearColor("#0A0A0A");
-        scene.fog = new THREE.FogExp2("#0A0A0A", 0.024);
+        scene.fog = new THREE.FogExp2("#0A0A0A", 0.02);
       }}
     >
       <CameraRig />

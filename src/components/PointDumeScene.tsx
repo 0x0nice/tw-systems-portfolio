@@ -17,7 +17,7 @@ function smoothstep(edge0: number, edge1: number, x: number) {
 
 /* ================================================================== */
 /*  Shared GLSL — Elevation-mapped LiDAR wireframe                     */
-/*  #333 (troughs) → #878 (mid) → bright peaks (bloom pickup)         */
+/*  Technical Gray: #333 → #5A5A5A → #878787                          */
 /* ================================================================== */
 
 const terrainVert = /* glsl */ `
@@ -40,54 +40,54 @@ const terrainFrag = /* glsl */ `
       0.0, 1.0
     );
 
-    // Elevation color ramp: dark base → mid gray → bright peaks
-    vec3 low  = vec3(0.12, 0.14, 0.12);  // dark green-gray
-    vec3 mid  = vec3(0.22, 0.26, 0.22);  // muted sage
-    vec3 high = vec3(0.38, 0.44, 0.38);  // bright peaks
+    // Technical Gray ramp — pure neutral, no color tint
+    vec3 low  = vec3(0.20);  // #333333
+    vec3 mid  = vec3(0.35);  // #5A5A5A
+    vec3 high = vec3(0.53);  // #878787
 
     vec3 color = t < 0.5
       ? mix(low, mid, t / 0.5)
       : mix(mid, high, (t - 0.5) / 0.5);
 
-    float alpha = uBaseOpacity + t * 0.25;
+    float alpha = uBaseOpacity + t * 0.18;
     gl_FragColor = vec4(color, alpha);
   }
 `;
 
 /* ================================================================== */
-/*  Zone 1 — THE CLIFF (Point Dume headland, left foreground)          */
-/*  Steep, jagged, elevated. The defining geographic feature.          */
+/*  Zone 1 — POINT DUME CLIFF (bottom-left foreground)                 */
+/*  Steep, rugged headland. Partially off-screen for dramatic framing. */
 /* ================================================================== */
 
 export function Cliff() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(16, 18, 48, 48);
+    const geo = new THREE.PlaneGeometry(20, 22, 48, 48);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
 
-      const nx = (x + 8) / 16;
-      const ny = (y + 9) / 18;
+      const nx = (x + 10) / 20;
+      const ny = (y + 11) / 22;
 
-      // Primary ridge running diagonally (NW → SE)
-      const ridge = Math.max(0, 1 - Math.abs(nx - 0.45 + ny * 0.15) * 2.5);
+      // Diagonal ridge spine running NW → SE through the headland
+      const ridge = Math.max(0, 1 - Math.abs(nx - 0.55 + ny * 0.2) * 3.0);
 
-      // High-frequency jagged rock noise
-      const n1 = fbm(x * 0.22 + 1.7, y * 0.22 - 0.3, 5, 2.2, 0.58);
-      const n2 = perlin2(x * 0.5, y * 0.4) * 0.35;
+      // Aggressive rocky detail — 5-octave FBM + high-freq Perlin
+      const n1 = fbm(x * 0.25 + 2.3, y * 0.25 - 1.1, 5, 2.2, 0.55);
+      const n2 = perlin2(x * 0.6, y * 0.5) * 0.3;
 
-      // Steep cliff face profile
-      const profile = Math.pow(ridge, 0.55) * 4.2;
-      const detail = (n1 * 1.6 + n2) * ridge;
+      // Steep cliff profile with power curve
+      const profile = Math.pow(ridge, 0.5) * 5.0;
+      const detail = (n1 * 2.0 + n2) * ridge;
 
-      // Taper edges to zero for clean boundary
+      // Hard edge fade — taper to zero at mesh boundaries
       const fade = Math.min(
-        smoothstep(0, 0.18, nx),
-        smoothstep(0, 0.18, 1 - nx),
-        smoothstep(0, 0.22, ny),
-        smoothstep(0, 0.22, 1 - ny)
+        smoothstep(0, 0.12, nx),
+        smoothstep(0, 0.12, 1 - nx),
+        smoothstep(0, 0.15, ny),
+        smoothstep(0, 0.15, 1 - ny)
       );
 
       pos.setZ(i, (profile + detail) * fade);
@@ -100,8 +100,8 @@ export function Cliff() {
   const uniforms = useMemo(
     () => ({
       uMinElev: { value: 0 },
-      uMaxElev: { value: 5.5 },
-      uBaseOpacity: { value: 0.12 },
+      uMaxElev: { value: 6.0 },
+      uBaseOpacity: { value: 0.15 },
     }),
     []
   );
@@ -109,8 +109,8 @@ export function Cliff() {
   return (
     <mesh
       geometry={geometry}
-      rotation={[-Math.PI / 2, 0, 0.1]}
-      position={[-10, -2.8, -2]}
+      rotation={[-Math.PI / 2, 0, 0.15]}
+      position={[-14, -5, 2]}
     >
       <shaderMaterial
         vertexShader={terrainVert}
@@ -125,26 +125,26 @@ export function Cliff() {
 }
 
 /* ================================================================== */
-/*  Zone 2 — ZUMA BEACH (right side, mostly flat)                      */
-/*  Subtle sand-dune undulation extending into the distance.           */
+/*  Zone 2 — ZUMA BEACH (right side, static flat sand)                 */
+/*  Z-rotation angles left edge to form shoreline with ocean below.    */
 /* ================================================================== */
 
 export function Beach() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(24, 30, 32, 40);
+    const geo = new THREE.PlaneGeometry(28, 40, 20, 28);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
 
-      // Subtle dune undulation
-      const dune = perlin2(x * 0.07, y * 0.05) * 0.12;
-      const ripple = perlin2(x * 0.3, y * 0.15) * 0.03;
+      // Subtle dune undulation only
+      const dune = perlin2(x * 0.06, y * 0.04) * 0.08;
+      const ripple = perlin2(x * 0.25, y * 0.12) * 0.02;
 
-      // Gentle slope toward ocean on left edge
-      const nx = (x + 12) / 24;
-      const slope = Math.max(0, (1 - nx) * 0.06);
+      // Beach slopes down toward ocean on left edge (-x side)
+      const nx = (x + 14) / 28;
+      const slope = Math.max(0, (1 - nx) * 0.08);
 
       pos.setZ(i, dune + ripple - slope);
     }
@@ -155,9 +155,9 @@ export function Beach() {
 
   const uniforms = useMemo(
     () => ({
-      uMinElev: { value: -0.15 },
-      uMaxElev: { value: 0.18 },
-      uBaseOpacity: { value: 0.06 },
+      uMinElev: { value: -0.10 },
+      uMaxElev: { value: 0.12 },
+      uBaseOpacity: { value: 0.015 },
     }),
     []
   );
@@ -165,8 +165,8 @@ export function Beach() {
   return (
     <mesh
       geometry={geometry}
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[9, -3.1, -8]}
+      rotation={[-Math.PI / 2, 0, -0.12]}
+      position={[10, -4.4, -12]}
     >
       <shaderMaterial
         vertexShader={terrainVert}
@@ -181,8 +181,9 @@ export function Beach() {
 }
 
 /* ================================================================== */
-/*  Zone 3 — THE OCEAN (center-left, below terrain)                    */
-/*  Wireframe grid with diagonal wave displacement via useFrame.       */
+/*  Zone 3 — THE OCEAN (center-left, 0.2u below beach)                */
+/*  Only animated mesh. Opposing Z-rotation creates diagonal shoreline */
+/*  where ocean and beach planes intersect.                            */
 /* ================================================================== */
 
 export function Ocean() {
@@ -191,12 +192,12 @@ export function Ocean() {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uWaveAmplitude: { value: 0.1 },
-      uWaveFrequency: { value: 2.0 },
-      uWaveSpeed: { value: 0.25 },
-      uMinElev: { value: -0.12 },
-      uMaxElev: { value: 0.12 },
-      uBaseOpacity: { value: 0.10 },
+      uWaveAmplitude: { value: 0.08 },
+      uWaveFrequency: { value: 2.2 },
+      uWaveSpeed: { value: 0.2 },
+      uMinElev: { value: -0.10 },
+      uMaxElev: { value: 0.10 },
+      uBaseOpacity: { value: 0.06 },
     }),
     []
   );
@@ -207,10 +208,10 @@ export function Ocean() {
 
   return (
     <mesh
-      rotation={[-Math.PI / 2, 0, 0.18]}
-      position={[-5, -3.2, -5]}
+      rotation={[-Math.PI / 2, 0, 0.12]}
+      position={[-4, -4.6, -8]}
     >
-      <planeGeometry args={[38, 32, 50, 50]} />
+      <planeGeometry args={[42, 36, 44, 40]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={oceanWaveVertexShader}
@@ -226,28 +227,30 @@ export function Ocean() {
 }
 
 /* ================================================================== */
-/*  Zone 4 — HORIZON HILLS (Santa Monica Mountains, far background)    */
-/*  Smooth low-frequency rolling terrain fading into the void.         */
+/*  Zone 4 — SANTA MONICA MOUNTAINS (far right horizon)                */
+/*  Rolling silhouette, right-biased. Fog-attenuated at z=-35.         */
 /* ================================================================== */
 
 export function Hills() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(55, 18, 56, 24);
+    const geo = new THREE.PlaneGeometry(60, 16, 44, 14);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
 
-      // Smooth low-frequency rolling hills
-      const h1 = fbm(x * 0.035 + 5, y * 0.05 + 3, 3, 2.0, 0.5);
-      const h2 = perlin2(x * 0.02, y * 0.025) * 0.6;
+      const nx = (x + 30) / 60;
 
-      // Envelope — taller in center, fading at edges
-      const nx = (x + 27.5) / 55;
-      const envelope = Math.sin(nx * Math.PI) * 0.85 + 0.15;
+      // Low-frequency rolling terrain (3-octave FBM)
+      const h1 = fbm(x * 0.03 + 7.0, y * 0.045 + 4.0, 3, 2.0, 0.5);
+      const h2 = perlin2(x * 0.018, y * 0.02) * 0.5;
 
-      pos.setZ(i, Math.max(0, (h1 * 1.4 + h2) * envelope));
+      // Mountains taller on the right side (+x), tapering at edges
+      const envelope = Math.sin(nx * Math.PI) * 0.8 + 0.2;
+      const rightBias = smoothstep(0.1, 0.6, nx);
+
+      pos.setZ(i, Math.max(0, (h1 * 1.8 + h2) * envelope * rightBias));
     }
 
     geo.computeVertexNormals();
@@ -257,8 +260,8 @@ export function Hills() {
   const uniforms = useMemo(
     () => ({
       uMinElev: { value: 0 },
-      uMaxElev: { value: 2.2 },
-      uBaseOpacity: { value: 0.08 },
+      uMaxElev: { value: 2.0 },
+      uBaseOpacity: { value: 0.04 },
     }),
     []
   );
@@ -266,8 +269,8 @@ export function Hills() {
   return (
     <mesh
       geometry={geometry}
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, -2.8, -25]}
+      rotation={[-Math.PI / 2, 0, 0.05]}
+      position={[8, -3.5, -35]}
     >
       <shaderMaterial
         vertexShader={terrainVert}
@@ -282,20 +285,19 @@ export function Hills() {
 }
 
 /* ================================================================== */
-/*  THE SUN — brilliant copper sphere on the left horizon              */
-/*  toneMapped={false} + color multiplier ensures bloom pickup.        */
+/*  THE SUN — copper sphere on the left horizon                        */
+/*  Half-submerged on ocean plane. Bloom creates ambient warm glow.     */
 /* ================================================================== */
 
 export function Sun() {
-  // Multiply base copper color for luminance that exceeds bloom threshold
   const sunColor = useMemo(
     () => new THREE.Color("#D97736").multiplyScalar(5.0),
     []
   );
 
   return (
-    <mesh position={[-24, -2.0, -18]} renderOrder={-1}>
-      <sphereGeometry args={[1.1, 32, 32]} />
+    <mesh position={[-22, -4.0, -22]} renderOrder={-1}>
+      <sphereGeometry args={[1.2, 32, 32]} />
       <meshBasicMaterial color={sunColor} toneMapped={false} />
     </mesh>
   );
@@ -308,7 +310,7 @@ export function Sun() {
 export function CameraRig() {
   const { camera } = useThree();
   const basePosition = useMemo(() => new THREE.Vector3(0, 3.5, 14), []);
-  const target = useMemo(() => new THREE.Vector3(0, 0, -8), []);
+  const target = useMemo(() => new THREE.Vector3(0, 2.5, -8), []);
 
   useFrame((state) => {
     const px = state.pointer.x;
