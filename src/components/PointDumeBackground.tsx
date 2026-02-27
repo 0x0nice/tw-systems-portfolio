@@ -22,7 +22,7 @@ export default function PointDumeBackground() {
     <Canvas
       dpr={[1, 2]}
       gl={{ antialias: false, alpha: false }}
-      camera={{ position: [0, 3.5, 14], fov: 55, near: 0.1, far: 150 }}
+      camera={{ position: [0, 0, 5], fov: 55, near: 0.1, far: 150 }}
       style={{
         position: "fixed",
         top: 0,
