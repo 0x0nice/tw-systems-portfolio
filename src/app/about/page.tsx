@@ -50,11 +50,10 @@ const CREDENTIALS = [
     items: ["DACFP — Certified in Blockchain & Digital Assets"],
   },
   {
-    category: "Education",
+    category: "Research",
     items: [
+      "Cognitive Psychology · Decision Science · Behavioral Economics",
       "University of Missouri — Columbia",
-      "100 credit hours toward B.S. in Psychology",
-      "Cognitive Psychology · Brain & Behavior · Research Methods",
     ],
   },
 ];
@@ -193,9 +192,9 @@ export default function AboutPage() {
               transition={{ delay: 0.5 }}
               className="max-w-2xl text-sm leading-relaxed text-[#878787] md:text-base"
             >
-              The through-line is cognitive psychology. Three years of
-              coursework at Mizzou studying how humans make decisions under
-              pressure, applied across five years on the trading desk, distilled
+              The through-line is cognitive psychology — how humans make
+              decisions under pressure. Years studying decision science at
+              Mizzou, applied across five years on the trading desk, distilled
               into software that enforces deliberate process over reactive
               impulse.
             </motion.p>

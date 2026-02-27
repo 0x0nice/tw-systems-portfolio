@@ -185,7 +185,7 @@ export const PROJECTS: Project[] = [
       { category: "Deploy", items: ["Netlify", "PWA", "Single-File Architecture"] },
     ],
     links: [
-      { label: "Live App", url: "https://projectzero-8kq.pages.dev" },
+      { label: "Live App", url: "https://project-zero-nine-opal.vercel.app" },
     ],
   },
 ];
