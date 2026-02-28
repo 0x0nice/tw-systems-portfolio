@@ -4,7 +4,10 @@ import { useRef, useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { perlin2, fbm } from "@/lib/noise";
-import { oceanWaveVertexShader } from "@/shaders/oceanShader";
+import {
+  oceanWaveVertexShader,
+  oceanSpecularFragShader,
+} from "@/shaders/oceanShader";
 
 /* ================================================================== */
 /*  Helpers                                                            */
@@ -16,9 +19,15 @@ function smoothstep(edge0: number, edge1: number, x: number) {
 }
 
 /* ================================================================== */
+/*  Shared constants                                                   */
+/* ================================================================== */
+
+/** Sun world-space position — shared between Sun mesh and Ocean specular */
+const SUN_POS: [number, number, number] = [-35, 25, -50];
+
+/* ================================================================== */
 /*  Shared GLSL — Elevation-mapped LiDAR wireframe                     */
 /*  Technical Gray: #333 → #5A5A5A → #878787                          */
-/*  Used by: Cliff, Ocean, Hills                                       */
 /* ================================================================== */
 
 const terrainVert = /* glsl */ `
@@ -66,8 +75,7 @@ const terrainFrag = /* glsl */ `
 
 /* ================================================================== */
 /*  Beach GLSL — Solid dark matte surface with subtle static grain     */
-/*  NO wireframe. OPAQUE. The geometric edge of this plane IS the      */
-/*  shoreline — it occludes the wireframe ocean below via depth buffer. */
+/*  NO wireframe. The geometric edge of this plane IS the shoreline.   */
 /* ================================================================== */
 
 const beachVert = /* glsl */ `
@@ -86,29 +94,29 @@ const beachFrag = /* glsl */ `
   }
 
   void main() {
-    vec3 baseColor = vec3(0.055);  // barely above void #0A0A0A
+    vec3 baseColor = vec3(0.04);  // barely above void #0A0A0A
 
     // Fine static sand grain
-    float grain = hash(floor(vUv * 600.0)) * 0.018;
+    float grain = hash(floor(vUv * 800.0)) * 0.014;
 
     vec3 color = baseColor + grain;
 
-    // Tiny edge-softening at the ocean-side edge only (UV.x = 0)
-    float edgeSoften = smoothstep(0.0, 0.02, vUv.x);
+    // Soft fade at the ocean-side edge (UV.x = 0 side)
+    float edgeSoften = smoothstep(0.0, 0.015, vUv.x);
 
     gl_FragColor = vec4(color, edgeSoften);
   }
 `;
 
 /* ================================================================== */
-/*  Element 5 — POINT DUME CLIFF (bottom-left frame)                   */
-/*  Displaced SphereGeometry. Jagged, rocky headland peeking in from   */
-/*  bottom-left corner. Only the peaks are visible in frame.           */
+/*  Element 1 — POINT DUME CLIFF (bottom-left foreground)              */
+/*  Displaced SphereGeometry. Jagged, rocky headland partially         */
+/*  off-screen in the bottom-left corner.                              */
 /* ================================================================== */
 
 export function Cliff() {
   const geometry = useMemo(() => {
-    const geo = new THREE.SphereGeometry(8, 36, 36);
+    const geo = new THREE.SphereGeometry(10, 40, 40);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
@@ -123,13 +131,13 @@ export function Cliff() {
       const nz = z / len;
 
       // Heavy noise displacement — jagged rock detail
-      const n1 = fbm(x * 0.2 + 3.1, z * 0.2 - 1.7, 5, 2.2, 0.55);
-      const n2 = perlin2(x * 0.5, z * 0.5) * 0.4;
-      const spike = perlin2(x * 1.2, y * 1.2) * 0.3;
+      const n1 = fbm(x * 0.18 + 3.1, z * 0.18 - 1.7, 5, 2.2, 0.55);
+      const n2 = perlin2(x * 0.45, z * 0.45) * 0.5;
+      const spike = perlin2(x * 1.0, y * 1.0) * 0.35;
 
       // Only heavily displace the upper hemisphere (peaks)
-      const upperBias = smoothstep(-4, 4, y);
-      const displacement = (n1 * 2.5 + n2 + spike) * upperBias;
+      const upperBias = smoothstep(-5, 5, y);
+      const displacement = (n1 * 3.0 + n2 + spike) * upperBias;
 
       pos.setX(i, x + nx * displacement);
       pos.setY(i, y + ny * displacement);
@@ -142,18 +150,15 @@ export function Cliff() {
 
   const uniforms = useMemo(
     () => ({
-      uMinElev: { value: -10 },
-      uMaxElev: { value: 2.0 },
-      uBaseOpacity: { value: 0.14 },
+      uMinElev: { value: -12 },
+      uMaxElev: { value: 4.0 },
+      uBaseOpacity: { value: 0.16 },
     }),
     []
   );
 
   return (
-    <mesh
-      geometry={geometry}
-      position={[-18, -12, -5]}
-    >
+    <mesh geometry={geometry} position={[-20, -10, 8]}>
       <shaderMaterial
         vertexShader={cliffVert}
         fragmentShader={terrainFrag}
@@ -167,14 +172,15 @@ export function Cliff() {
 }
 
 /* ================================================================== */
-/*  Element 2 — THE BEACH (right side, SOLID — no wireframe)           */
-/*  Opaque dark surface with grain. The Z-rotation creates a diagonal  */
-/*  edge that reads as the Malibu shoreline against the ocean below.   */
+/*  Element 2 — ZUMA BEACH (right side, SOLID — no wireframe)          */
+/*  Opaque dark matte surface with grain. Sweeps diagonally from       */
+/*  the right toward center-left. Its edge over the ocean IS the       */
+/*  shoreline.                                                         */
 /* ================================================================== */
 
 export function Beach() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(30, 50, 16, 24);
+    const geo = new THREE.PlaneGeometry(35, 55, 18, 28);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
@@ -182,8 +188,8 @@ export function Beach() {
       const y = pos.getY(i);
 
       // Subtle dune undulation
-      const dune = perlin2(x * 0.05, y * 0.03) * 0.06;
-      const ripple = perlin2(x * 0.2, y * 0.1) * 0.015;
+      const dune = perlin2(x * 0.04, y * 0.025) * 0.05;
+      const ripple = perlin2(x * 0.18, y * 0.08) * 0.012;
 
       pos.setZ(i, dune + ripple);
     }
@@ -195,8 +201,8 @@ export function Beach() {
   return (
     <mesh
       geometry={geometry}
-      rotation={[-Math.PI / 2, 0, 0.2]}
-      position={[15, -4, -30]}
+      rotation={[-Math.PI / 2, 0, 0.25]}
+      position={[10, -4, -30]}
     >
       <shaderMaterial
         vertexShader={beachVert}
@@ -209,13 +215,14 @@ export function Beach() {
 }
 
 /* ================================================================== */
-/*  Element 3 — THE OCEAN (left side, animated wireframe)              */
-/*  The ONLY animated mesh. Sits infinitesimally below the beach.      */
-/*  The beach's opaque edge occludes this, creating the shoreline.     */
+/*  Element 3 — THE OCEAN (left side, animated wireframe + specular)   */
+/*  Sits slightly below the beach. The beach's opaque edge occludes    */
+/*  this, creating the shoreline. Specular beam from the sun.          */
 /* ================================================================== */
 
 export function Ocean() {
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
+  const { camera } = useThree();
 
   const uniforms = useMemo(
     () => ({
@@ -226,24 +233,26 @@ export function Ocean() {
       uMinElev: { value: -0.10 },
       uMaxElev: { value: 0.10 },
       uBaseOpacity: { value: 0.12 },
+      uSunPos: { value: new THREE.Vector3(...SUN_POS) },
+      uCameraPos: { value: new THREE.Vector3(0, 0, 5) },
+      uSpecularIntensity: { value: 2.0 },
     }),
     []
   );
 
   useFrame((state) => {
     materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    // Update camera position each frame for accurate specular
+    materialRef.current.uniforms.uCameraPos.value.copy(camera.position);
   });
 
   return (
-    <mesh
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[-10, -4.2, -30]}
-    >
-      <planeGeometry args={[40, 40, 48, 44]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-10, -4.2, -30]}>
+      <planeGeometry args={[45, 45, 52, 48]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={oceanWaveVertexShader}
-        fragmentShader={terrainFrag}
+        fragmentShader={oceanSpecularFragShader}
         uniforms={uniforms}
         wireframe
         transparent
@@ -255,31 +264,31 @@ export function Ocean() {
 }
 
 /* ================================================================== */
-/*  Element 4 — SANTA MONICA MOUNTAINS (far right horizon)             */
-/*  Wide, rolling silhouette. Deep enough that fog fades them to a     */
-/*  ghostly horizon line.                                              */
+/*  Element 4 — SANTA MONICA MOUNTAINS (far background horizon)        */
+/*  Wide rolling silhouette deep in -z. Fog fades them to ghostly      */
+/*  horizon line on the right side.                                    */
 /* ================================================================== */
 
 export function Hills() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(80, 20, 56, 18);
+    const geo = new THREE.PlaneGeometry(90, 22, 64, 20);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
 
-      const nx = (x + 40) / 80;
+      const nx = (x + 45) / 90;
 
       // Low-frequency rolling terrain (3-octave FBM)
-      const h1 = fbm(x * 0.025 + 7.0, y * 0.04 + 4.0, 3, 2.0, 0.5);
-      const h2 = perlin2(x * 0.015, y * 0.018) * 0.5;
+      const h1 = fbm(x * 0.022 + 7.0, y * 0.035 + 4.0, 3, 2.0, 0.5);
+      const h2 = perlin2(x * 0.012, y * 0.015) * 0.6;
 
       // Mountains taller on the right side, tapering at edges
       const envelope = Math.sin(nx * Math.PI) * 0.8 + 0.2;
-      const rightBias = smoothstep(0.1, 0.6, nx);
+      const rightBias = smoothstep(0.1, 0.55, nx);
 
-      pos.setZ(i, Math.max(0, (h1 * 2.0 + h2) * envelope * rightBias));
+      pos.setZ(i, Math.max(0, (h1 * 2.5 + h2) * envelope * rightBias));
     }
 
     geo.computeVertexNormals();
@@ -289,8 +298,8 @@ export function Hills() {
   const uniforms = useMemo(
     () => ({
       uMinElev: { value: 0 },
-      uMaxElev: { value: 2.5 },
-      uBaseOpacity: { value: 0.10 },
+      uMaxElev: { value: 3.0 },
+      uBaseOpacity: { value: 0.08 },
     }),
     []
   );
@@ -298,8 +307,8 @@ export function Hills() {
   return (
     <mesh
       geometry={geometry}
-      rotation={[-Math.PI / 2, 0, 0.05]}
-      position={[20, 0, -60]}
+      rotation={[-Math.PI / 2, 0, 0.04]}
+      position={[15, 3, -70]}
     >
       <shaderMaterial
         vertexShader={terrainVert}
@@ -314,27 +323,44 @@ export function Hills() {
 }
 
 /* ================================================================== */
-/*  Element 1 — THE SUN (top-left anchor)                              */
+/*  Element 5 — THE SUN (top-left, elevated, extreme bloom)            */
 /*  Copper sphere high and to the far left. Bloom creates warm glow.   */
 /* ================================================================== */
 
 export function Sun() {
   const sunColor = useMemo(
-    () => new THREE.Color("#D97736").multiplyScalar(6.0),
+    () => new THREE.Color("#D97736").multiplyScalar(7.0),
     []
   );
 
   return (
-    <mesh position={[-25, 15, -40]} renderOrder={-1}>
-      <sphereGeometry args={[2.0, 32, 32]} />
+    <mesh position={SUN_POS} renderOrder={-1}>
+      <sphereGeometry args={[2.5, 32, 32]} />
       <meshBasicMaterial color={sunColor} toneMapped={false} fog={false} />
     </mesh>
   );
 }
 
 /* ================================================================== */
+/*  HORIZON GLOW — Amber PointLight behind mountains                   */
+/*  Simulates the warm under-lighting of a sunset against terrain.     */
+/* ================================================================== */
+
+export function HorizonGlow() {
+  return (
+    <pointLight
+      position={[10, -2, -65]}
+      color="#D97736"
+      intensity={8}
+      distance={80}
+      decay={2}
+    />
+  );
+}
+
+/* ================================================================== */
 /*  CAMERA RIG — mouse parallax with smooth lerp                       */
-/*  Camera near [0, 0, 5] looking toward -z                            */
+/*  Camera at [0, 0, 5] looking toward -z                              */
 /* ================================================================== */
 
 export function CameraRig() {
@@ -346,8 +372,8 @@ export function CameraRig() {
     const px = state.pointer.x;
     const py = state.pointer.y;
 
-    const tx = basePosition.x + px * 1.0;
-    const ty = basePosition.y + py * 0.4;
+    const tx = basePosition.x + px * 1.2;
+    const ty = basePosition.y + py * 0.5;
 
     camera.position.x += (tx - camera.position.x) * 0.02;
     camera.position.y += (ty - camera.position.y) * 0.02;

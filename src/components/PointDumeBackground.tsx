@@ -10,6 +10,7 @@ import {
   Ocean,
   Hills,
   Sun,
+  HorizonGlow,
   CameraRig,
 } from "@/components/PointDumeScene";
 
@@ -42,12 +43,13 @@ export default function PointDumeBackground() {
       <Ocean />
       <Hills />
       <Sun />
+      <HorizonGlow />
 
       <EffectComposer>
         <Bloom
           luminanceThreshold={0.2}
           luminanceSmoothing={0.9}
-          intensity={1.8}
+          intensity={2.5}
           mipmapBlur
         />
       </EffectComposer>
