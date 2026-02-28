@@ -14,6 +14,21 @@ const PhotoBackground = dynamic(
   { ssr: false }
 );
 
+const BackgroundTelemetry = dynamic(
+  () => import("@/components/BackgroundTelemetry"),
+  { ssr: false }
+);
+
+const BackgroundDataStream = dynamic(
+  () => import("@/components/BackgroundDataStream"),
+  { ssr: false }
+);
+
+const BackgroundAmbientEngine = dynamic(
+  () => import("@/components/BackgroundAmbientEngine"),
+  { ssr: false }
+);
+
 export default function SceneLoader() {
   const { mode } = useSceneToggle();
 
@@ -25,5 +40,8 @@ export default function SceneLoader() {
 
   if (mode === "3d") return <PointDumeBackground />;
   if (mode === "photo") return <PhotoBackground />;
+  if (mode === "telemetry") return <BackgroundTelemetry />;
+  if (mode === "datastream") return <BackgroundDataStream />;
+  if (mode === "ambient") return <BackgroundAmbientEngine />;
   return null;
 }

@@ -9,6 +9,9 @@ import { useSceneToggle, type SceneMode } from "@/context/SceneToggleContext";
 
 const SCENE_OPTIONS: { value: SceneMode; label: string; dot: string }[] = [
   { value: "off", label: "OFF", dot: "bg-[#333333]" },
+  { value: "telemetry", label: "GRID", dot: "bg-[#555555]" },
+  { value: "datastream", label: "DATA", dot: "bg-[#878787]" },
+  { value: "ambient", label: "ORBS", dot: "bg-[#D97736]" },
   { value: "3d", label: "3D", dot: "bg-[#00F5D4]" },
   { value: "photo", label: "PHOTO", dot: "bg-[#D97736]" },
 ];
