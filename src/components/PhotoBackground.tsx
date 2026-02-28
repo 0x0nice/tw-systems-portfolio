@@ -27,7 +27,7 @@ export default function PhotoBackground() {
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, rgba(10,10,10,0.3) 25%, rgba(10,10,10,0.1) 50%, rgba(10,10,10,0.25) 100%)",
+            "linear-gradient(to bottom, rgba(10,10,10,0.65) 0%, rgba(10,10,10,0.5) 30%, rgba(10,10,10,0.35) 55%, rgba(10,10,10,0.45) 100%)",
         }}
       />
     </div>
