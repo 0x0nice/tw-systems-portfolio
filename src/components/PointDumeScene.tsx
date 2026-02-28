@@ -23,11 +23,11 @@ function smoothstep(edge0: number, edge1: number, x: number) {
 /* ================================================================== */
 
 /** Sun world-space position — shared between Sun mesh and Ocean specular */
-const SUN_POS: [number, number, number] = [-35, 25, -50];
+const SUN_POS: [number, number, number] = [-35, 20, -60];
 
 /* ================================================================== */
 /*  Shared GLSL — Elevation-mapped LiDAR wireframe                     */
-/*  Technical Gray: #333 → #5A5A5A → #878787                          */
+/*  Technical Gray for mountains                                       */
 /* ================================================================== */
 
 const terrainVert = /* glsl */ `
@@ -59,7 +59,7 @@ const terrainFrag = /* glsl */ `
       0.0, 1.0
     );
 
-    // Technical Gray ramp — pure neutral, no color tint
+    // Technical Gray ramp
     vec3 low  = vec3(0.20);  // #333333
     vec3 mid  = vec3(0.35);  // #5A5A5A
     vec3 high = vec3(0.53);  // #878787
@@ -75,7 +75,7 @@ const terrainFrag = /* glsl */ `
 
 /* ================================================================== */
 /*  Beach GLSL — Solid dark matte surface with subtle static grain     */
-/*  NO wireframe. The geometric edge of this plane IS the shoreline.   */
+/*  NO wireframe. The S-curve edge of this plane IS the shoreline.     */
 /* ================================================================== */
 
 const beachVert = /* glsl */ `
@@ -101,8 +101,8 @@ const beachFrag = /* glsl */ `
 
     vec3 color = baseColor + grain;
 
-    // Soft fade at the ocean-side edge (UV.x = 0 side)
-    float edgeSoften = smoothstep(0.0, 0.015, vUv.x);
+    // Soft fade at the left edge (ocean side, UV.x = 0)
+    float edgeSoften = smoothstep(0.0, 0.02, vUv.x);
 
     gl_FragColor = vec4(color, edgeSoften);
   }
@@ -124,7 +124,6 @@ export function Cliff() {
       const y = pos.getY(i);
       const z = pos.getZ(i);
 
-      // Normalize direction from center for radial displacement
       const len = Math.sqrt(x * x + y * y + z * z) || 1;
       const nx = x / len;
       const ny = y / len;
@@ -135,7 +134,6 @@ export function Cliff() {
       const n2 = perlin2(x * 0.45, z * 0.45) * 0.5;
       const spike = perlin2(x * 1.0, y * 1.0) * 0.35;
 
-      // Only heavily displace the upper hemisphere (peaks)
       const upperBias = smoothstep(-5, 5, y);
       const displacement = (n1 * 3.0 + n2 + spike) * upperBias;
 
@@ -152,13 +150,13 @@ export function Cliff() {
     () => ({
       uMinElev: { value: -12 },
       uMaxElev: { value: 4.0 },
-      uBaseOpacity: { value: 0.16 },
+      uBaseOpacity: { value: 0.14 },
     }),
     []
   );
 
   return (
-    <mesh geometry={geometry} position={[-20, -10, 8]}>
+    <mesh geometry={geometry} position={[-22, -12, 6]}>
       <shaderMaterial
         vertexShader={cliffVert}
         fragmentShader={terrainFrag}
@@ -172,26 +170,33 @@ export function Cliff() {
 }
 
 /* ================================================================== */
-/*  Element 2 — ZUMA BEACH (right side, SOLID — no wireframe)          */
-/*  Opaque dark matte surface with grain. Sweeps diagonally from       */
-/*  the right toward center-left. Its edge over the ocean IS the       */
-/*  shoreline.                                                         */
+/*  Element 2 — S-CURVE BEACH (right 1/3, SOLID — no wireframe)       */
+/*  The left edge is vertex-displaced with a sine-based S-curve so     */
+/*  the shoreline sweeps organically instead of being a straight line. */
 /* ================================================================== */
 
 export function Beach() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(35, 55, 18, 28);
+    const geo = new THREE.PlaneGeometry(100, 100, 50, 50);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i);
+      let x = pos.getX(i);
       const y = pos.getY(i);
 
-      // Subtle dune undulation
-      const dune = perlin2(x * 0.04, y * 0.025) * 0.05;
-      const ripple = perlin2(x * 0.18, y * 0.08) * 0.012;
+      // S-CURVE: Displace X based on Y (depth) to create the sweeping cove
+      // Primary S-curve
+      x += Math.sin(y * 0.05) * 15;
+      // Secondary organic wobble
+      x += Math.sin(y * 0.12) * 4;
+      // Subtle micro-variation
+      x += perlin2(x * 0.02, y * 0.02) * 2;
 
-      pos.setZ(i, dune + ripple);
+      // Very subtle dune undulation on Z
+      const dune = perlin2(x * 0.03, y * 0.02) * 0.04;
+
+      pos.setX(i, x);
+      pos.setZ(i, dune);
     }
 
     geo.computeVertexNormals();
@@ -201,8 +206,8 @@ export function Beach() {
   return (
     <mesh
       geometry={geometry}
-      rotation={[-Math.PI / 2, 0, 0.25]}
-      position={[10, -4, -30]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[25, -5, -40]}
     >
       <shaderMaterial
         vertexShader={beachVert}
@@ -215,9 +220,9 @@ export function Beach() {
 }
 
 /* ================================================================== */
-/*  Element 3 — THE OCEAN (left side, animated wireframe + specular)   */
-/*  Sits slightly below the beach. The beach's opaque edge occludes    */
-/*  this, creating the shoreline. Specular beam from the sun.          */
+/*  Element 3 — THE OCEAN (left 2/3, animated wireframe + specular)    */
+/*  Calm compound sine waves. Sits slightly below the beach.           */
+/*  The beach's opaque S-curve edge occludes this = the shoreline.     */
 /* ================================================================== */
 
 export function Ocean() {
@@ -227,28 +232,24 @@ export function Ocean() {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uWaveAmplitude: { value: 0.08 },
-      uWaveFrequency: { value: 2.2 },
-      uWaveSpeed: { value: 0.2 },
-      uMinElev: { value: -0.10 },
-      uMaxElev: { value: 0.10 },
-      uBaseOpacity: { value: 0.12 },
+      uMinElev: { value: -1.2 },
+      uMaxElev: { value: 1.2 },
+      uBaseOpacity: { value: 0.13 },
       uSunPos: { value: new THREE.Vector3(...SUN_POS) },
       uCameraPos: { value: new THREE.Vector3(0, 0, 5) },
-      uSpecularIntensity: { value: 2.0 },
+      uSpecularIntensity: { value: 2.5 },
     }),
     []
   );
 
   useFrame((state) => {
     materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
-    // Update camera position each frame for accurate specular
     materialRef.current.uniforms.uCameraPos.value.copy(camera.position);
   });
 
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-10, -4.2, -30]}>
-      <planeGeometry args={[45, 45, 52, 48]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-15, -5.2, -40]}>
+      <planeGeometry args={[120, 100, 60, 55]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={oceanWaveVertexShader}
@@ -264,31 +265,43 @@ export function Ocean() {
 }
 
 /* ================================================================== */
-/*  Element 4 — SANTA MONICA MOUNTAINS (far background horizon)        */
-/*  Wide rolling silhouette deep in -z. Fog fades them to ghostly      */
-/*  horizon line on the right side.                                    */
+/*  Element 4 — SANTA MONICA MOUNTAINS (far right horizon)             */
+/*  Vertex-displaced peaks using compound sine for rolling hills.      */
+/*  Slopes down toward center-left to meet the water line.             */
 /* ================================================================== */
 
 export function Hills() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(90, 22, 64, 20);
+    const geo = new THREE.PlaneGeometry(100, 30, 70, 24);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
 
-      const nx = (x + 45) / 90;
+      // Normalized X position [0..1] across the plane
+      const nx = (x + 50) / 100;
 
-      // Low-frequency rolling terrain (3-octave FBM)
-      const h1 = fbm(x * 0.022 + 7.0, y * 0.035 + 4.0, 3, 2.0, 0.5);
-      const h2 = perlin2(x * 0.012, y * 0.015) * 0.6;
+      // Compound sine peaks — rolling mountain silhouette
+      const peak1 = Math.abs(Math.sin(x * 0.05)) * 15;
+      const peak2 = Math.cos(x * 0.1) * 5;
+      const peak3 = Math.sin(x * 0.03 + 1.5) * 3;
 
-      // Mountains taller on the right side, tapering at edges
-      const envelope = Math.sin(nx * Math.PI) * 0.8 + 0.2;
-      const rightBias = smoothstep(0.1, 0.55, nx);
+      // Combine peaks
+      let z = peak1 + peak2 + peak3;
 
-      pos.setZ(i, Math.max(0, (h1 * 2.5 + h2) * envelope * rightBias));
+      // Slope down toward left (center of screen → water)
+      const leftFade = smoothstep(0.0, 0.45, nx);
+      z *= leftFade;
+
+      // Taper at far edges
+      const edgeFade = Math.sin(nx * Math.PI);
+      z *= edgeFade * 0.8 + 0.2;
+
+      // Subtle noise for organic detail
+      z += perlin2(x * 0.04, y * 0.06) * 1.5;
+
+      pos.setZ(i, Math.max(0, z));
     }
 
     geo.computeVertexNormals();
@@ -298,8 +311,8 @@ export function Hills() {
   const uniforms = useMemo(
     () => ({
       uMinElev: { value: 0 },
-      uMaxElev: { value: 3.0 },
-      uBaseOpacity: { value: 0.08 },
+      uMaxElev: { value: 18 },
+      uBaseOpacity: { value: 0.10 },
     }),
     []
   );
@@ -307,8 +320,8 @@ export function Hills() {
   return (
     <mesh
       geometry={geometry}
-      rotation={[-Math.PI / 2, 0, 0.04]}
-      position={[15, 3, -70]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[20, -5, -80]}
     >
       <shaderMaterial
         vertexShader={terrainVert}
@@ -349,7 +362,7 @@ export function Sun() {
 export function HorizonGlow() {
   return (
     <pointLight
-      position={[10, -2, -65]}
+      position={[10, -2, -70]}
       color="#D97736"
       intensity={8}
       distance={80}
