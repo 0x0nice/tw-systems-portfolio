@@ -84,3 +84,12 @@ body {
 .hero-cta-secondary:hover {
   color: #EDEDED;
 }
+
+/* Scene-aware text legibility — dark shadow is invisible on #0A0A0A,
+   but creates a readable halo over photo/3D backgrounds */
+body {
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.7);
+}
+h1, h2, h3 {
+  text-shadow: 0 2px 16px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.9);
+}

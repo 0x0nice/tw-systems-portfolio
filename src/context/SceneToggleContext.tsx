@@ -2,14 +2,16 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 
+export type SceneMode = "off" | "3d" | "photo";
+
 interface SceneToggleContextValue {
-  enabled: boolean;
-  toggle: () => void;
+  mode: SceneMode;
+  setMode: (mode: SceneMode) => void;
 }
 
 const SceneToggleContext = createContext<SceneToggleContextValue>({
-  enabled: false,
-  toggle: () => {},
+  mode: "off",
+  setMode: () => {},
 });
 
 const STORAGE_KEY = "tw-scene-3d";
@@ -19,26 +21,25 @@ export function SceneToggleProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [enabled, setEnabled] = useState(false);
+  const [mode, setModeState] = useState<SceneMode>("off");
 
   useEffect(() => {
     // Respect reduced-motion preference
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "on") setEnabled(true);
+    // Backwards-compatible: old "on" value maps to "3d"
+    if (stored === "on" || stored === "3d") setModeState("3d");
+    else if (stored === "photo") setModeState("photo");
   }, []);
 
-  const toggle = () => {
-    setEnabled((prev) => {
-      const next = !prev;
-      localStorage.setItem(STORAGE_KEY, next ? "on" : "off");
-      return next;
-    });
+  const setMode = (next: SceneMode) => {
+    setModeState(next);
+    localStorage.setItem(STORAGE_KEY, next);
   };
 
   return (
-    <SceneToggleContext.Provider value={{ enabled, toggle }}>
+    <SceneToggleContext.Provider value={{ mode, setMode }}>
       {children}
     </SceneToggleContext.Provider>
   );

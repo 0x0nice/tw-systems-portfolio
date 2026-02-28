@@ -3,7 +3,6 @@
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
-import { useSceneToggle } from "@/context/SceneToggleContext";
 import {
   Cliff,
   Beach,
@@ -15,10 +14,6 @@ import {
 } from "@/components/PointDumeScene";
 
 export default function PointDumeBackground() {
-  const { enabled } = useSceneToggle();
-
-  if (!enabled) return null;
-
   return (
     <Canvas
       dpr={[1, 2]}
