@@ -32,7 +32,8 @@ export default function BackgroundAmbientEngine() {
         left: 0,
         width: "100vw",
         height: "100vh",
-        zIndex: -1,
+        zIndex: 0,
+        pointerEvents: "none",
         overflow: "hidden",
         backgroundColor: "#0A0A0A",
       }}

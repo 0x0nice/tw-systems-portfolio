@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useSceneToggle } from "@/context/SceneToggleContext";
 
@@ -47,11 +46,8 @@ const BackgroundSubsonicSweep = dynamic(
 export default function SceneLoader() {
   const { mode } = useSceneToggle();
 
-  // Make body transparent so zIndex:-1 backgrounds show through
-  useEffect(() => {
-    document.body.style.backgroundColor =
-      mode === "off" ? "#0A0A0A" : "transparent";
-  }, [mode]);
+  // Body stays opaque #0A0A0A — backgrounds layer above it (zIndex:0)
+  // and content layers above backgrounds (relative z-10 wrapper in layout)
 
   if (mode === "3d") return <PointDumeBackground />;
   if (mode === "photo") return <PhotoBackground />;

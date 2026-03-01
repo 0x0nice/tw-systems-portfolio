@@ -25,7 +25,8 @@ export default function PointDumeBackground() {
         left: 0,
         width: "100vw",
         height: "100vh",
-        zIndex: -1,
+        zIndex: 0,
+        pointerEvents: "none",
       }}
       onCreated={({ gl, scene }) => {
         gl.setClearColor("#0A0A0A");

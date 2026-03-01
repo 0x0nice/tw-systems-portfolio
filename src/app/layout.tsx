@@ -39,8 +39,10 @@ export default function RootLayout({
         <BootAnimationProvider>
           <SceneToggleProvider>
             <SceneLoader />
-            <Nav />
-            {children}
+            <div className="relative z-10">
+              <Nav />
+              {children}
+            </div>
           </SceneToggleProvider>
         </BootAnimationProvider>
       </body>
