@@ -21,7 +21,7 @@ export function SceneToggleProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [mode, setModeState] = useState<SceneMode>("ambient");
+  const [mode, setModeState] = useState<SceneMode>("off");
 
   useEffect(() => {
     // Respect reduced-motion preference
