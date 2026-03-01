@@ -35,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${instrumentSerif.variable} ${geistMono.variable} bg-[#0A0A0A]`}
     >
-      <body className="bg-[#0A0A0A] text-[#EDEDED] font-mono antialiased">
+      <body className="text-[#EDEDED] font-mono antialiased">
         <BootAnimationProvider>
           <SceneToggleProvider>
             <SceneLoader />

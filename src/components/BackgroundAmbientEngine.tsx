@@ -36,6 +36,7 @@ export default function BackgroundAmbientEngine() {
         pointerEvents: "none",
         overflow: "hidden",
         backgroundColor: "#0A0A0A",
+        WebkitBackfaceVisibility: "hidden",
       }}
     >
       {ORBS.map((orb, i) => (

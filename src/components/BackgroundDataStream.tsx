@@ -97,6 +97,7 @@ export default function BackgroundDataStream() {
         height: "100vh",
         zIndex: 0,
         pointerEvents: "none",
+        WebkitBackfaceVisibility: "hidden",
       }}
     />
   );

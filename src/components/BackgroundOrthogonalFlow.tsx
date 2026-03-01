@@ -166,6 +166,7 @@ export default function BackgroundOrthogonalFlow() {
         pointerEvents: "none",
         filter: "blur(3px)",
         transform: "scale(1.03)",
+        WebkitBackfaceVisibility: "hidden",
       }}
     />
   );

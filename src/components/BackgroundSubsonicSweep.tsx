@@ -15,6 +15,7 @@ export default function BackgroundSubsonicSweep() {
         pointerEvents: "none",
         overflow: "hidden",
         backgroundColor: "#0A0A0A",
+        WebkitBackfaceVisibility: "hidden",
       }}
     >
       <motion.div

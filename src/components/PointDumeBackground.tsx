@@ -27,6 +27,7 @@ export default function PointDumeBackground() {
         height: "100vh",
         zIndex: 0,
         pointerEvents: "none",
+        WebkitBackfaceVisibility: "hidden",
       }}
       onCreated={({ gl, scene }) => {
         gl.setClearColor("#0A0A0A");

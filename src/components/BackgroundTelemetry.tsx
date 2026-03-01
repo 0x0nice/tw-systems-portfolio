@@ -112,6 +112,7 @@ export default function BackgroundTelemetry() {
         height: "100vh",
         zIndex: 0,
         pointerEvents: "none",
+        WebkitBackfaceVisibility: "hidden",
       }}
     />
   );

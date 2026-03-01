@@ -170,6 +170,7 @@ export default function BackgroundCalibrationGrid() {
         zIndex: 0,
         pointerEvents: "none",
         backgroundColor: "#0A0A0A",
+        WebkitBackfaceVisibility: "hidden",
       }}
     />
   );

@@ -13,6 +13,7 @@ export default function PhotoBackground() {
         height: "100vh",
         zIndex: 0,
         pointerEvents: "none",
+        WebkitBackfaceVisibility: "hidden",
       }}
     >
       <Image
