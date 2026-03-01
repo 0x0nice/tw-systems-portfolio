@@ -164,6 +164,7 @@ export default function BackgroundOrthogonalFlow() {
         height: "100vh",
         zIndex: -1,
         filter: "blur(3px)",
+        transform: "scale(1.03)",
       }}
     />
   );
