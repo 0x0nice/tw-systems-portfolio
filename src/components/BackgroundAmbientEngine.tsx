@@ -48,11 +48,10 @@ export default function BackgroundAmbientEngine() {
           }}
           style={{
             position: "absolute",
-            width: 500,
-            height: 500,
+            width: 700,
+            height: 700,
             borderRadius: "50%",
-            background: orb.color,
-            filter: "blur(150px)",
+            background: `radial-gradient(circle, ${orb.color} 0%, transparent 70%)`,
             opacity: 0.15,
             transform: "translate(-50%, -50%)",
           }}
