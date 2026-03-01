@@ -27,7 +27,7 @@ function createParticle(w: number, h: number): Particle {
     speed: 12 + Math.random() * 20,
     dir: (Math.floor(Math.random() * 4) as 0 | 1 | 2 | 3),
     size: 1 + Math.random() * 1,
-    baseAlpha: 0.08 + Math.random() * 0.15,
+    baseAlpha: 0.15 + Math.random() * 0.25,
     turnTimer: 0,
     turnInterval: 3 + Math.random() * 8,
     pulseTimer: 0,
@@ -120,7 +120,7 @@ export default function BackgroundOrthogonalFlow() {
         // Draw particle
         if (p.pulseFade > 0 && p.pulseColor) {
           // Pulse glow
-          const glowAlpha = p.pulseFade * 0.12;
+          const glowAlpha = p.pulseFade * 0.3;
           ctx.fillStyle = p.pulseColor;
           ctx.globalAlpha = glowAlpha;
           ctx.beginPath();
@@ -128,7 +128,7 @@ export default function BackgroundOrthogonalFlow() {
           ctx.fill();
 
           // Bright core
-          ctx.globalAlpha = p.pulseFade * 0.4;
+          ctx.globalAlpha = p.pulseFade * 0.7;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size * 1.5, 0, Math.PI * 2);
           ctx.fill();
@@ -163,7 +163,6 @@ export default function BackgroundOrthogonalFlow() {
         width: "100vw",
         height: "100vh",
         zIndex: -1,
-        opacity: 0.25,
       }}
     />
   );
