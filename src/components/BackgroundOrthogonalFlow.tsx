@@ -18,7 +18,7 @@ interface Particle {
   pulseFade: number;
 }
 
-const BRAND_COLORS = ["#D97736", "#52B774", "#3B82F6"];
+const BRAND_COLORS = ["#D97736", "#52B774", "#00F5D4"];
 
 function createParticle(w: number, h: number): Particle {
   return {
