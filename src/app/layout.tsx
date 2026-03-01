@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${instrumentSerif.variable} ${geistMono.variable}`}
+      className={`${instrumentSerif.variable} ${geistMono.variable} bg-[#0A0A0A]`}
     >
       <body className="bg-[#0A0A0A] text-[#EDEDED] font-mono antialiased">
         <BootAnimationProvider>
