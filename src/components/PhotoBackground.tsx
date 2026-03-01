@@ -18,7 +18,7 @@ export default function PhotoBackground() {
         src="/backgrounds/malibu-sunset.png"
         alt=""
         fill
-        style={{ objectFit: "cover" }}
+        style={{ objectFit: "cover", filter: "blur(12px)", transform: "scale(1.05)" }}
         priority
       />
       {/* Dark gradient overlay for text legibility */}
