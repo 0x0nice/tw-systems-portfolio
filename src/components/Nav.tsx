@@ -9,6 +9,9 @@ import { useSceneToggle, type SceneMode } from "@/context/SceneToggleContext";
 
 const SCENE_OPTIONS: { value: SceneMode; label: string; dot: string }[] = [
   { value: "off", label: "OFF", dot: "bg-[#333333]" },
+  { value: "calibration", label: "CALIB", dot: "bg-[#555555]" },
+  { value: "orthogonal", label: "FLOW", dot: "bg-[#878787]" },
+  { value: "sweep", label: "SWEEP", dot: "bg-[#1a1a1a] border border-[#333333]" },
   { value: "telemetry", label: "GRID", dot: "bg-[#555555]" },
   { value: "datastream", label: "DATA", dot: "bg-[#878787]" },
   { value: "ambient", label: "ORBS", dot: "bg-[#D97736]" },

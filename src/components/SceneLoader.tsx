@@ -29,6 +29,21 @@ const BackgroundAmbientEngine = dynamic(
   { ssr: false }
 );
 
+const BackgroundCalibrationGrid = dynamic(
+  () => import("@/components/BackgroundCalibrationGrid"),
+  { ssr: false }
+);
+
+const BackgroundOrthogonalFlow = dynamic(
+  () => import("@/components/BackgroundOrthogonalFlow"),
+  { ssr: false }
+);
+
+const BackgroundSubsonicSweep = dynamic(
+  () => import("@/components/BackgroundSubsonicSweep"),
+  { ssr: false }
+);
+
 export default function SceneLoader() {
   const { mode } = useSceneToggle();
 
@@ -43,5 +58,8 @@ export default function SceneLoader() {
   if (mode === "telemetry") return <BackgroundTelemetry />;
   if (mode === "datastream") return <BackgroundDataStream />;
   if (mode === "ambient") return <BackgroundAmbientEngine />;
+  if (mode === "calibration") return <BackgroundCalibrationGrid />;
+  if (mode === "orthogonal") return <BackgroundOrthogonalFlow />;
+  if (mode === "sweep") return <BackgroundSubsonicSweep />;
   return null;
 }

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 
-export type SceneMode = "off" | "3d" | "photo" | "telemetry" | "datastream" | "ambient";
+export type SceneMode = "off" | "3d" | "photo" | "telemetry" | "datastream" | "ambient" | "calibration" | "orthogonal" | "sweep";
 
 interface SceneToggleContextValue {
   mode: SceneMode;
@@ -34,6 +34,9 @@ export function SceneToggleProvider({
     else if (stored === "telemetry") setModeState("telemetry");
     else if (stored === "datastream") setModeState("datastream");
     else if (stored === "ambient") setModeState("ambient");
+    else if (stored === "calibration") setModeState("calibration");
+    else if (stored === "orthogonal") setModeState("orthogonal");
+    else if (stored === "sweep") setModeState("sweep");
   }, []);
 
   const setMode = (next: SceneMode) => {
